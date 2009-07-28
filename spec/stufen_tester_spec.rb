@@ -1,5 +1,3 @@
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
 
 require 'lib/stufen_tester'
 require 'lib/tasten_sender'

@@ -1,5 +1,3 @@
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
 
 require 'lib/tasten_sender'
 
@@ -15,8 +13,8 @@ describe TastenSender do
   it "should be able to control notepad" do
     @ts.should_not be_nil
 
-    sende_tasten('Editor', '%{F4}') # anderen Editor schließen, falls keine ungespeicherten Änderungen
-    sende_tasten('Editor', nil).should == false # "Anderer Editor vorher schon geöffnet"
+    sende_tasten('Editor', '%{F4}') # anderen Editor schlieï¿½en, falls keine ungespeicherten ï¿½nderungen
+    sende_tasten('Editor', nil).should == false # "Anderer Editor vorher schon geï¿½ffnet"
     
     system "start notepad"
     sende_tasten('Editor', nil).should == true
