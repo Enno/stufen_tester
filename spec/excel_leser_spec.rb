@@ -5,8 +5,9 @@ require 'lib/excel_leser'
 
 describe ExcelLeser do
   before(:each) do
-    mappen_name = "..."
-    @el = ExcelLeser.new(mappen_name, "Global", "Tabelle")
+    mappen_name = "Tabelle-4sr_a.xls"
+    mappen_pfad = File.dirname(File.dirname(__FILE__)) +  "/daten/"
+    @el = ExcelLeser.new(mappen_pfad + mappen_name, "Global", "Tabelle")
   end
 
   it "sollte existieren" do
