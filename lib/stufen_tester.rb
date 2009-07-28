@@ -1,5 +1,3 @@
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
 
 SPALTEN_UEBERSCHRIFTEN = {
   :minijob_ok       => "Berechnung ggf. auch im  Minijob-Bereich darstellen",

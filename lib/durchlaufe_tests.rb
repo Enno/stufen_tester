@@ -1,5 +1,6 @@
 
 require 'win32ole'
+
 # Create an instance of the Wscript Shell:
 wsh = WIN32OLE.new('Wscript.Shell')
 # Try to activate the Notepad window:
