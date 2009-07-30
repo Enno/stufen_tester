@@ -106,9 +106,9 @@ class ExcelReader < ExcelController
         loop do #bessere schleife einbauen, sonst fehler beim letzten durchgang (all)
           @current_value = @@current_excel_appl.WorkSheets(@@current_sheet_name).
             range(@start_address).offset(@row_offset+i,@column_offset).value
-          break if @current_value == nil
           i+=1
           @one_dataset << @current_value
+          break if @current_value == nil
         end
       end
       return @one_dataset
@@ -138,7 +138,7 @@ column_name = ExcelInputBox.new.
 if SPALTEN_UEBERSCHRIFTEN.include?(column_name.to_sym)
   datasets.column_name = SPALTEN_UEBERSCHRIFTEN["#{column_name}".to_sym]
   datasets = datasets.get_contents
-  puts datasets
+  # puts datasets
 elsif column_name == "all"
   i = 0
   data_hash = {}
@@ -146,6 +146,7 @@ elsif column_name == "all"
     datasets.column_name = value
     data_hash[key] = datasets.get_contents
     i += 1
+    puts value
     puts i
   end
 else
