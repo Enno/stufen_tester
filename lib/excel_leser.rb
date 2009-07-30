@@ -93,22 +93,21 @@ class ExcelReader < ExcelController
     WIN32OLE.connect('Excel.Application').ActiveWorkbook
     if @@current_excel_appl.
         WorkSheets(@@current_sheet_name).Cells(@start_row, @start_colum).
-        find(@column_name[0..6])  #
+        find(@column_name[0..6]) 
       @start_address = @@current_excel_appl.
         WorkSheets(@@current_sheet_name).Cells(@start_row, @start_colum).
-        find(@column_name).address
+        find(@column_name[0..6]).address
       @current_value = @@current_excel_appl.WorkSheets(@@current_sheet_name).
         range(@start_address).offset(@row_offset,@column_offset).value
       if @current_value == nil
         raise "Error Message: " "Kein Datensatz vorhanden."
       else
         i=0
-        until @current_value == nil #bessere schleife einbauen
+        until @current_value == nil #bessere schleife einbauen, sonst fehler beim letzten durchgang (all)
           @current_value = @@current_excel_appl.WorkSheets(@@current_sheet_name).
             range(@start_address).offset(@row_offset+i,@column_offset).value
           i+=1
           @one_dataset << @current_value
-          puts @current_value
         end
       end
       return @one_dataset
@@ -142,18 +141,20 @@ if SPALTEN_UEBERSCHRIFTEN.include?(column_name.to_sym)
   datasets.column_name = SPALTEN_UEBERSCHRIFTEN["#{column_name}".to_sym]
   datasets = datasets.get_contents
 elsif column_name == "all"
+  i = 0
+  data_hash = {}
   SPALTEN_UEBERSCHRIFTEN.each do |key, value|
-  puts SPALTEN_UEBERSCHRIFTEN[key]
-  datasets.column_name = SPALTEN_UEBERSCHRIFTEN[key]
-    datasets[key] = datasets.get_contents
+    datasets.column_name = value
+    data_hash[key] = datasets.get_contents
+    i += 1
+    puts i
   end
 else
   raise "Error Message :" "Spaltenname existiert nicht"
 end
-puts datasets.inspect
+#puts data_hash
 
-
-#sleep(2)
-#excel.close_excel_file
-#sleep(2)
-#excel.quit_excel
+sleep(2)
+excel.close_excel_file
+sleep(2)
+excel.quit_excel
