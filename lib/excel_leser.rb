@@ -1,6 +1,6 @@
 
 #constant definition
-FILE_PATH = File.dirname(File.dirname(__FILE__)) +  '/daten/'
+FILE_PATH = File.dirname(File.dirname(__FILE__)).gsub('\\', '/') +  '/daten/'
 
 class ExcelInputBox # spaeter ersetzen durch rwd http://www.erikveen.dds.nl/rubywebdialogs/index.html#1.0.0
   require 'win32ole'
@@ -34,7 +34,7 @@ class ExcelController
   end
   def open_excel_file()
     dateiname = FILE_PATH + @excel_file_name
-    if File.exist?(@excel_file_name)
+    if File.exist?(dateiname) #(@excel_file_name)
       #      @excel_appl = WIN32OLE.GetActiveObject('Excel.Application') ||
       #        WIN32OLE.new('Excel.Application')
       @excel_appl = WIN32OLE.new('Excel.Application') 

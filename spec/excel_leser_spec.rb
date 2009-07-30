@@ -1,6 +1,6 @@
 
 require 'win32ole'
-require File.dirname(File.dirname(__FILE__)) +  '/../lib/excel_leser.rb'
+require File.dirname(File.dirname(__FILE__)) +  '/lib/excel_leser.rb'
 require 'spec'
 
 describe ExcelInputBox do
