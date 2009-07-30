@@ -1,4 +1,4 @@
-
+puts "tasten_sender_spec"
 require 'lib/tasten_sender'
 
 describe TastenSender do

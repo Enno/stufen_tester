@@ -1,4 +1,4 @@
-
+puts "stufen_tester_spec"
 require 'lib/stufen_tester'
 require 'lib/tasten_sender'
 
@@ -21,8 +21,6 @@ describe StufenTester do
     sende_tasten('Microsoft Excel', nil).should == true
     sende_tasten('Microsoft Excel - stufenrechner', nil).should == true
     
-    
-    # TODO
   end
 end
 
