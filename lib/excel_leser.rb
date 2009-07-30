@@ -33,16 +33,17 @@ class ExcelController
     @@current_excel_appl = ""
   end
   def open_excel_file()
+    dateiname = FILE_PATH + @excel_file_name
     if File.exist?(@excel_file_name)
       #      @excel_appl = WIN32OLE.GetActiveObject('Excel.Application') ||
       #        WIN32OLE.new('Excel.Application')
       @excel_appl = WIN32OLE.new('Excel.Application') 
-      @excel_appl['Visible'] = true
-      @excel_appl.Workbooks.Open(FILE_PATH + @excel_file_name)
+      @excel_appl['Visible'] = true      
+      @excel_appl.Workbooks.Open(dateiname)
       @@current_excel_appl = @excel_appl
       @workbook = WIN32OLE.connect('Excel.Application').ActiveWorkbook #problem wenn alter excel task noch aktiv
     else
-      raise "Error Message: " "Datei nicht vorhanden" # eventuell neue abfrage
+      raise "Error Message: " "Datei '#{dateiname}' nicht vorhanden " # eventuell neue abfrage
     end
   end
   def find_excel_sheet
