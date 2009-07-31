@@ -1,6 +1,6 @@
 
 #constant definition
-FILE_PATH = File.dirname(File.dirname(__FILE__)).gsub('\\', '/') +  '/daten/'
+#FILE_PATH = File.dirname(File.dirname(__FILE__)).gsub('\\', '/') +  '/daten/'
 
 class ExcelInputBox # spaeter ersetzen durch rwd http://www.erikveen.dds.nl/rubywebdialogs/index.html#1.0.0
   require 'win32ole'
@@ -22,7 +22,7 @@ class ExcelController
   require 'win32ole'
   attr_accessor :excel_file_name, :excel_sheet_name
   attr_reader :workbook, :sheet, :current_sheet_name
-  def initialize()
+  def initialize(pfad, blatt1, blatt2)
     @excel_file_name = ""
     @excel_sheet_name = ""
     @excel_appl = ""
@@ -32,8 +32,9 @@ class ExcelController
     @@current_sheet_name = ""
     @@current_excel_appl = ""
   end
-  def open_excel_file()
-    dateiname = FILE_PATH + @excel_file_name
+  def open_excel_file(pfad)
+    #dateiname = FILE_PATH + @excel_file_name
+    dateiname = pfad
     if File.exist?(dateiname) #(@excel_file_name)
       #      @excel_appl = WIN32OLE.GetActiveObject('Excel.Application') ||
       #        WIN32OLE.new('Excel.Application')
@@ -73,14 +74,14 @@ class ExcelController
 end
 # person + personalnr zur identifikation, falls doppelte namen
 # spaeter abfrage welchen datensatz auslesen
-class ExcelReader < ExcelController
+class ExcelLeser < ExcelController
   require 'win32ole'
   require 'stufen_tester'
   attr_accessor :column_name, :first_std_column
-  def initialize()
+  def initialize(pfad, global_name, tabelle_name)
     @start_row = 1
     @start_colum = 1
-    @start_address = nil
+    @start_addresse = nil
     @row_offset = 2
     @column_offset = 0
     @column_name = ""
@@ -88,7 +89,10 @@ class ExcelReader < ExcelController
     @current_value = []
     i = 0
     @first_std_column = ""
-  end
+    @tabelle_name = tabelle_name
+    super
+    open_excel_file(pfad)
+   end
   def get_contents
     WIN32OLE.connect('Excel.Application').ActiveWorkbook
     if @@current_excel_appl.
@@ -116,44 +120,58 @@ class ExcelReader < ExcelController
       raise "Error Message :" "Spaltenname nicht gefunden"
     end
   end
-end
-
-excel = ExcelController.new
-
-excel.excel_file_name = ExcelInputBox.new.
-  get_user_input("Welche Datei soll geoeffnet werden?") + '.xls'
-
-excel.open_excel_file
-
-excel.excel_sheet_name = ExcelInputBox.new.
-  get_user_input("Welches Worksheet soll geoeffnet werden? (" +
-    excel.find_excel_sheet.collect { |names| names + ", "}.to_s.chop.chop + ")")
-
-excel.select_excel_sheet
-
-datasets = ExcelReader.new
-
-column_name = ExcelInputBox.new.
-  get_user_input("Welche Spalte soll ausgelesen werden?") # pulldown menue benoetigt 
-if SPALTEN_UEBERSCHRIFTEN.include?(column_name.to_sym)
-  datasets.column_name = SPALTEN_UEBERSCHRIFTEN["#{column_name}".to_sym]
-  datasets = datasets.get_contents
-  # puts datasets
-elsif column_name == "all"
-  i = 0
-  data_hash = {}
-  SPALTEN_UEBERSCHRIFTEN.each do |key, value|
-    datasets.column_name = value
-    data_hash[key] = datasets.get_contents
-    i += 1
-    puts value
-    puts i
+  def zeile(zeilen_nummer)
+    i=0
+    loop do #bessere schleife einbauen, sonst fehler beim letzten durchgang (all)
+      @aktuelle_zeile = @excel_appl.WorkSheets(@tabelle_name).
+        range("A1").offset(zeilen_nummer,@column_offset+i).value
+      i+=1
+      return @aktuelle_zeile
+      break if @aktuelle_zeile == nil
+    end
   end
-else
-  raise "Error Message :" "Spaltenname existiert nicht"
 end
 
-sleep(2)
-excel.close_excel_file
-sleep(2)
-excel.quit_excel
+#excel = ExcelController.new
+#
+#excel.excel_file_name = ExcelInputBox.new.
+#  get_user_input("Welche Datei soll geoeffnet werden?") + '.xls'
+
+#excel.open_excel_file
+#
+#excel.excel_sheet_name = ExcelInputBox.new.
+#  get_user_input("Welches Worksheet soll geoeffnet werden? (" +
+#    excel.find_excel_sheet.collect { |names| names + ", "}.to_s.chop.chop + ")")
+#
+#excel.select_excel_sheet
+#
+#datasets = ExcelLeser.new
+#
+#column_name = ExcelInputBox.new.
+#  get_user_input("Welche Spalte soll ausgelesen werden?") # pulldown menue benoetigt
+#if SPALTEN_UEBERSCHRIFTEN.include?(column_name.to_sym)
+#  datasets.column_name = SPALTEN_UEBERSCHRIFTEN["#{column_name}".to_sym]
+#  datasets = datasets.get_contents
+#  # puts datasets
+#elsif column_name == "all"
+#  i = 0
+#  data_hash = {}
+#  SPALTEN_UEBERSCHRIFTEN.each do |key, value|
+#    datasets.column_name = value
+#    data_hash[key] = datasets.get_contents
+#    i += 1
+#    puts value
+#    puts i
+#  end
+#else
+#  raise "Error Message :" "Spaltenname existiert nicht"
+#end
+#
+#excel = ExcelController.new
+#mappen_pfad = File.dirname(File.dirname(__FILE__)).gsub('\\', '/') +  '/daten/'
+#excel.open_excel_file(mappen_pfad + mappen_name, "Global", "Tabelle")
+#
+#sleep(2)
+#excel.close_excel_file
+#sleep(2)
+#excel.quit_excel
