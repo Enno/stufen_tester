@@ -40,6 +40,7 @@ end
 class ExcelLeser #< ExcelController
   def initialize(pfad, global_name, tabelle_name)
     @tabelle_name = tabelle_name
+    WIN32OLE.codepage = WIN32OLE::CP_UTF8 #zeichen als unicode verarbeiten
     @excel_controller = ExcelController.new(pfad)
     @excel_controller.open_excel_file(pfad)
     @xlapp = @excel_controller.excel_appl

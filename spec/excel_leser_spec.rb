@@ -30,7 +30,8 @@ describe ExcelLeser do
   it "sollte Zeile 21 korrekt einlesen" do
     z21 = @el.zeile(21)
 
-    z21[:name][0..6].should                  == "Gerda M" #üller"
+    # z21[:name][0..6].should                  == "Gerda M" #üller"
+    z21[:name].should                  == "Gerda Müller"
     #@el.wert(22, :name).should                  == "Hans Meier"
     z21[:berufsgruppe].should          == "Angestellte/Arbeiter"
   end
