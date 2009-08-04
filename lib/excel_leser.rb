@@ -45,6 +45,8 @@ class ExcelLeser #< ExcelController
     @excel_controller = ExcelController.new(pfad)
     @excel_controller.open_excel_file(pfad)
     @xlapp = @excel_controller.excel_appl
+    @leerzeilen = 1 # anzahl der leerzeilen zwischen ueberschrift und beginn
+    # der datensaetze im excelsheet "Tabelle"
   end
   
   def zeile(zeilen_nummer)
@@ -56,7 +58,7 @@ class ExcelLeser #< ExcelController
         aktuelle_spalte, aktuelle_zeile = @xlapp.WorkSheets(@tabelle_name).
           Cells(1,1).Find(value[0..6]).Address.scan(/\w+/)
         erg[key.to_sym] = @xlapp.WorkSheets(@tabelle_name).
-          range("#{aktuelle_spalte}#{zeilen_nummer}").value
+          Range("#{aktuelle_spalte}#{zeilen_nummer}").value
       end
     end
     return erg
@@ -69,13 +71,12 @@ class ExcelLeser #< ExcelController
     if spalte_vorhanden
       aktuelle_spalte, aktuelle_zeile = @xlapp.WorkSheets(@tabelle_name).
         Cells(1,1).Find(spalten_name[0..6]).Address.scan(/\w+/)
-      i=0
-      loop do
+      anzahl_datensaetze = @xlapp.WorkSheets(@tabelle_name).
+        UsedRange.Rows.count - aktuelle_zeile.to_i - @leerzeilen
+      for i in 0..anzahl_datensaetze - 1 do
         erg[i] = @xlapp.WorkSheets(@tabelle_name).
-          range("#{aktuelle_spalte}#{aktuelle_zeile}").offset(2+i,0).value
-        break if erg[i] == nil #dadurch datensatz ein feld zu gross (nil)
-        i+=1
-        #offset als konstante, oder sonstiges?
+          Range("#{aktuelle_spalte}#{aktuelle_zeile}").
+          Offset(@leerzeilen + 1 + i, 0).value
       end
       return erg
     end
