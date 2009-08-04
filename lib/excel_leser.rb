@@ -26,7 +26,8 @@ class ExcelController
       @excel_appl['Visible'] = true      
       @mappe = @excel_appl.Workbooks.Open(dateiname)
     else
-      raise "Error Message: " "Datei '#{dateiname}' nicht vorhanden " # eventuell neue abfrage
+      raise "Error Message: " "Datei '#{dateiname}' nicht vorhanden "
+      ## eventuell neue abfrage
     end
   end
 
@@ -49,13 +50,35 @@ class ExcelLeser #< ExcelController
   def zeile(zeilen_nummer)
     erg = {}
     SPALTEN_UEBERSCHRIFTEN.each do |key, value|
-      aktuelle_zelle = @xlapp.WorkSheets(@tabelle_name).Cells(1,1).Find(value[0..6]).Activate
+      aktuelle_zelle = @xlapp.WorkSheets(@tabelle_name).Cells(1,1).
+        Find(value[0..6]).Activate
       if aktuelle_zelle
-        aktuelle_spalte, aktuelle_zeile = @xlapp.WorkSheets(@tabelle_name).Cells(1,1).Find(value[0..6]).Address.scan(/\w+/)
-        erg[key.to_sym] = @xlapp.WorkSheets(@tabelle_name).range("#{aktuelle_spalte}#{zeilen_nummer}").value
+        aktuelle_spalte, aktuelle_zeile = @xlapp.WorkSheets(@tabelle_name).
+          Cells(1,1).Find(value[0..6]).Address.scan(/\w+/)
+        erg[key.to_sym] = @xlapp.WorkSheets(@tabelle_name).
+          range("#{aktuelle_spalte}#{zeilen_nummer}").value
       end
     end
     return erg
+  end
+
+  def spalte(spalten_name)
+    erg = {}
+    spalte_vorhanden = @xlapp.WorkSheets(@tabelle_name).Cells(1,1).
+      Find(spalten_name[0..6]).Activate
+    if spalte_vorhanden
+      aktuelle_spalte, aktuelle_zeile = @xlapp.WorkSheets(@tabelle_name).
+        Cells(1,1).Find(spalten_name[0..6]).Address.scan(/\w+/)
+      i=0
+      loop do
+        erg[i] = @xlapp.WorkSheets(@tabelle_name).
+          range("#{aktuelle_spalte}#{aktuelle_zeile}").offset(2+i,0).value
+        break if erg[i] == nil #dadurch datensatz ein feld zu gross (nil)
+        i+=1
+        #offset als konstante, oder sonstiges?
+      end
+      return erg
+    end
   end
 
   def excel_beenden

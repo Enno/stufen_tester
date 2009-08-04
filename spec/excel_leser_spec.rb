@@ -29,10 +29,8 @@ describe ExcelLeser do
 
   it "sollte Zeile 21 korrekt einlesen" do
     z21 = @el.zeile(21)
-
     # z21[:name][0..6].should                  == "Gerda M" #üller"
     z21[:name].should                  == "Gerda Müller"
-    #@el.wert(22, :name).should                  == "Hans Meier"
     z21[:berufsgruppe].should          == "Angestellte/Arbeiter"
   end
 
@@ -40,6 +38,22 @@ describe ExcelLeser do
     @el.zeile(21).size.should >= SPALTEN_UEBERSCHRIFTEN.size
     @el.zeile(22).size.should >= SPALTEN_UEBERSCHRIFTEN.size
     @el.zeile(23).size.should >= SPALTEN_UEBERSCHRIFTEN.size
+  end
+
+  it "sollte auf die Methode 'spalte' reagieren und einen Hash zurückgeben" do
+    @el.spalte("Name, Vorname").is_a?(Hash).should be_true
+  end
+
+  it "sollte Spalte 'name' korrekt einlesen" do
+    s1 = @el.spalte("Name, Vorname")
+    s1[0].should                  == "Gerda Müller"
+    s1[1].should                  == "Hans Meier"
+  end
+
+  it "sollte Spalte 'verzicht_betrag' korrekt einlesen" do
+    s1 = @el.spalte("Netto-/Bruttoverzicht")
+    s1[0].should                  == 57.57
+    s1[1].should                  == 50.00
   end
 end
 
