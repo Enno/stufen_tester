@@ -48,17 +48,26 @@ class ExcelLeser #< ExcelController
     @leerzeilen = 1 # anzahl der leerzeilen zwischen ueberschrift und beginn
     # der datensaetze im excelsheet "Tabelle"
   end
-  
+
+  def zeile_als_array(zeilen_nr)
+    @xlapp.WorkSheets(@tabelle_name).Rows(zeilen_nr).Value.first
+  end
+
   def zeile(zeilen_nummer)
     erg = {}
-    SPALTEN_UEBERSCHRIFTEN.each do |key, value|
-      aktuelle_zelle = @xlapp.WorkSheets(@tabelle_name).Cells(1,1).
-        Find(value[0..6]).Activate
-      if aktuelle_zelle
-        aktuelle_spalte, aktuelle_zeile = @xlapp.WorkSheets(@tabelle_name).
-          Cells(1,1).Find(value[0..6]).Address.scan(/\w+/)
-        erg[key.to_sym] = @xlapp.WorkSheets(@tabelle_name).
-          Range("#{aktuelle_spalte}#{zeilen_nummer}").value
+    blatt_ueberschriften = zeile_als_array(19)
+    aktuelle_zeile = zeile_als_array(zeilen_nummer)
+    SPALTEN_UEBERSCHRIFTEN.each do |key, ueberschrift_vorgegeben|
+      spalten_nr = blatt_ueberschriften.each_with_index do |ueberschrift_aus_blatt, index|
+        break nil if ueberschrift_aus_blatt.nil?
+        regex_neu = Regexp.new(ueberschrift_vorgegeben.source, Regexp::MULTILINE | Regexp::IGNORECASE )
+        break index if ueberschrift_aus_blatt.gsub(/[)(]/,"") =~ regex_neu
+      end
+      #aktuelle_zelle = @xlapp.WorkSheets(@tabelle_name).Cells(1,1).Find(value)
+      if spalten_nr.is_a? Integer
+        erg[key] = aktuelle_zeile[spalten_nr]
+      else
+        raise "Überschrift '#{ueberschrift_vorgegeben}' (für #{key}) nicht gefunden."
       end
     end
     return erg
