@@ -18,17 +18,13 @@ class ExcelController
   end
 
   def open_excel_file(pfad)
-    #dateiname = FILE_PATH + @excel_datei_name
     dateiname = pfad
-    if File.exist?(dateiname) #(@excel_datei_name)
+    if File.exist?(dateiname)
       #      @excel_appl = WIN32OLE.GetActiveObject('Excel.Application') ||
       #        WIN32OLE.new('Excel.Application')
       @excel_appl = WIN32OLE.new('Excel.Application') 
       @excel_appl['Visible'] = true      
       @mappe = @excel_appl.Workbooks.Open(dateiname)
-      #@excel_appl.Workbooks.Open(dateiname)
-      #@mappe = @excel_appl.ActiveWorkbook #problem wenn alter excel task noch aktiv
-      #@mappe = WIN32OLE.connect('Excel.Application').ActiveWorkbook #problem wenn alter excel task noch aktiv
     else
       raise "Error Message: " "Datei '#{dateiname}' nicht vorhanden " # eventuell neue abfrage
     end
@@ -51,9 +47,13 @@ class ExcelLeser #< ExcelController
   
   def zeile(zeilen_nummer)
     erg = {}
-    erg[:name] = @xlapp.WorkSheets(@tabelle_name).range("A#{zeilen_nummer}").value
-    erg[:verzicht_betrag] = @xlapp.WorkSheets(@tabelle_name).range("L#{zeilen_nummer}").value
-    erg[:berufsgruppe] = @xlapp.WorkSheets(@tabelle_name).range("Q#{zeilen_nummer}").value
+    SPALTEN_UEBERSCHRIFTEN.each do |key, value|
+      aktuelle_zelle = @xlapp.WorkSheets(@tabelle_name).Cells(1,1).Find(value[0..6]).Activate
+      if aktuelle_zelle
+        aktuelle_spalte, aktuelle_zeile = @xlapp.WorkSheets(@tabelle_name).Cells(1,1).Find(value[0..6]).Address.scan(/\w+/)
+        erg[key.to_sym] = @xlapp.WorkSheets(@tabelle_name).range("#{aktuelle_spalte}#{zeilen_nummer}").value
+      end
+    end
     return erg
   end
 
