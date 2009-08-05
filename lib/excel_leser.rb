@@ -3,40 +3,10 @@
 require 'win32ole'
 
 require 'grundlage'
+require 'excel_controller'
 
 #constant definition
 #FILE_PATH = File.dirname(File.dirname(__FILE__)).gsub('\\', '/') +  '/daten/'
-
-class ExcelController
-  attr_reader :excel_appl
-
-  def initialize(pfad)
-    @excel_datei_name = ""
-    @excel_blatt_name = ""
-    @excel_appl = ""
-    @mappe = ""
-  end
-
-  def open_excel_file(pfad)
-    dateiname = pfad
-    if File.exist?(dateiname)
-      #      @excel_appl = WIN32OLE.GetActiveObject('Excel.Application') ||
-      #        WIN32OLE.new('Excel.Application')
-      @excel_appl = WIN32OLE.new('Excel.Application') 
-      @excel_appl['Visible'] = true      
-      @mappe = @excel_appl.Workbooks.Open(dateiname)
-    else
-      raise "Error Message: " "Datei '#{dateiname}' nicht vorhanden "
-      ## eventuell neue abfrage
-    end
-  end
-
-  def quit_excel
-    @excel_appl.quit
-    @excel_appl = nil
-    GC.start #garbage control starten
-  end
-end
 
 class ExcelLeser #< ExcelController
   def initialize(pfad, global_name, tabelle_name)
@@ -54,11 +24,19 @@ class ExcelLeser #< ExcelController
     @xlapp.WorkSheets(@tabelle_name).Rows(zeilen_nr).Value.first
   end
 
+  def namenfeld_wert(namenfeld_bez)
+    begin
+      erg = @xlapp.WorkSheets(@global_name).Range(namenfeld_bez).Value
+    rescue WIN32OLERuntimeError
+      nil
+    end
+  end
+
   def zeile(zeilen_nummer)
     erg = {}
     blatt_ueberschriften = zeile_als_array(19)
     aktuelle_zeile = zeile_als_array(zeilen_nummer)
-    SPALTEN_UEBERSCHRIFTEN.each do |key, ueberschrift_vorgegeben|
+    SPALTEN_UEBERSCHRIFTEN.each do |ueberschrift_bezeichnung, ueberschrift_vorgegeben|
       spalten_nr = blatt_ueberschriften.each_with_index do |ueberschrift_aus_blatt, index|
         break nil if ueberschrift_aus_blatt.nil?
         regex_neu = Regexp.new(ueberschrift_vorgegeben.source, Regexp::MULTILINE | Regexp::IGNORECASE )
@@ -66,32 +44,14 @@ class ExcelLeser #< ExcelController
       end
       #aktuelle_zelle = @xlapp.WorkSheets(@tabelle_name).Cells(1,1).Find(value)
       if spalten_nr.is_a? Integer
-        erg[key] = aktuelle_zeile[spalten_nr]
+        erg[ueberschrift_bezeichnung] = aktuelle_zeile[spalten_nr]
       else
-        raise "Überschrift '#{ueberschrift_vorgegeben}' (für #{key}) nicht gefunden."
+        raise "Überschrift '#{ueberschrift_vorgegeben}' (für #{ueberschrift_bezeichnung}) nicht gefunden."
       end
-    end
-    return erg
-  end
-
-  def namenfeld_wert(namenfeld_bez)
-    begin
-      erg = @xlapp.WorkSheets(@global_name).Range(namenfeld_bez).Value
-    rescue WIN32OLERuntimeError       
-      nil
-    end
-    #    if nmfld.Name.ValidWorkbookParameter
-    #    return nmfld.value
-    #    else
-    #      raise "Namenfeld '#{namenfeld_bez}' auf dem Blatt '#{@global_name}' nicht gefunden"
-    #    end
-  end
-
-  def namenfeld
-    erg = {}
-    GLOBALBLATT_NAMEN.each do |namenfeld_bezeichnung, namenfeld_vorgegeben|
-      aktuelles_namenfeld = namenfeld_wert(namenfeld_bezeichnung.to_s)
-      erg[namenfeld_bezeichnung] = aktuelles_namenfeld
+      GLOBALBLATT_NAMEN.each do |namenfeld_bezeichnung, namenfeld_vorgegeben|
+        aktuelles_namenfeld = namenfeld_wert(namenfeld_vorgegeben)
+        erg[namenfeld_bezeichnung] = aktuelles_namenfeld
+      end
     end
     return erg
   end

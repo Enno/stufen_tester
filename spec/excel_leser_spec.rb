@@ -53,13 +53,12 @@ describe ExcelLeser do
   end
 #=end
   it "sollte auch die globalen Werte einlesen" do
-    nf = @el.zeile(21)
-    nf[:MinijobOK].should                    == "nein"
-    nf[:Durchführungsweg].should             == "Direktversicherung"
-    nf[:NettoOderBrutto].should              == "netto"
-    nf[:VLAlsBeitragVerwenden].should        == "ja"
-    nf[:ArbeitgeberZuschuss].should          == 10
-    nf[:AGZuschussProzentOderAbsolut].should == "%"
+    nf = @el.zeile(23)
+    nf[:minijob_ok].should                    == "nein"
+    nf[:durchfuehrungsweg].should             == "Direktversicherung"
+    nf[:verzicht_als_netto].should            == "netto"
+    nf[:vl_als_beitrag].should                == "ja"
+    nf[:ag_zuschuss].should                   == 10
+    nf[:ag_zuschuss_als_absolut].should       == "%"
   end
 end
-

@@ -13,7 +13,7 @@ describe FormFiller do
   end
 
   after(:each) do
-    @el.ergebnis_anfordern
+    @ff.ergebnis_anfordern
   end
 
 

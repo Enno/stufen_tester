@@ -10,12 +10,12 @@ GLOBAL_UEBERSCHRIFTEN = {
 }
 
 GLOBALBLATT_NAMEN = {
-  :MinijobOK                    => "Berechnung ggf. auch im  Minijob-Bereich darstellen",
-  :Durchführungsweg             => "Durchführungsweg",
-  :NettoOderBrutto              => "Betrag ist der Netto-/ Brutto-Verzicht",
-  :VLAlsBeitragVerwenden        => "Verwendung der VL als Beitrag",
-  :ArbeitgeberZuschuss          => "Angabe in €/ in % des Umwandlungsbetrages",
-  :AGZuschussProzentOderAbsolut => "Prozent / absolut",
+  :minijob_ok               => "MinijobOK",
+  :durchfuehrungsweg        => "Durchführungsweg",
+  :verzicht_als_netto       => "NettoOderBrutto",
+  :vl_als_beitrag           => "VLAlsBeitragVerwenden",
+  :ag_zuschuss              => "ArbeitgeberZuschuss",
+  :ag_zuschuss_als_absolut  => "AGZuschussProzentOderAbsolut",
   
 }
 
