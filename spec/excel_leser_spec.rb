@@ -51,38 +51,18 @@ describe ExcelLeser do
 
   it "sollte Überschriften korrekt unterscheiden" do
     s23 = @el.zeile(23)
-    s23[:bland_wohnsitz].should == "Hessen"
-    s23[:bland_arbeit].should == "Niedersachsen"
+    s23[:bland_wohnsitz].should   == "Hessen"
+    s23[:bland_arbeit].should     == "Niedersachsen"
   end
 
   it "sollte auch die globalen Werte einlesen" do
-    z21 = @el.zeile(21)
-    z21[:minijob_ok].should == "nein"
+    nf = @el.namenfeld
+    nf[:MinijobOK].should                    == "nein"
+    nf[:Durchführungsweg].should             == "Direktversicherung"
+    nf[:NettoOderBrutto].should              == "netto"
+    nf[:VLAlsBeitragVerwenden].should        == "ja"
+    nf[:ArbeitgeberZuschuss].should          == 10
+    nf[:AGZuschussProzentOderAbsolut].should == "%"
   end
-
-  #it "sollte nur Überschriften, die im Blatt existieren, finden" do
-    #z23 = @el.zeile(23)
-    #z23[:berufsgruppe].should == "Angestellte/Arbeiter"
-    #proc{ z23[:berufsgruppe] }.should   raise_error
-    #proc{ s23[:kirchensteuer] }.should   raise_error
-  #end
-
-=begin
-  it "sollte auf die Methode 'spalte' reagieren und einen Hash zurückgeben" do
-    @el.spalte("Name, Vorname").is_a?(Hash).should be_true
-  end
-
-  it "sollte Spalte 'name' korrekt einlesen" do
-    s1 = @el.spalte("Name, Vorname")
-    s1[0].should                  == "Gerda Müller"
-    s1[1].should                  == "Hans Meier"
-  end
-
-  it "sollte Spalte 'verzicht_betrag' korrekt einlesen" do
-    s1 = @el.spalte("Netto-/Bruttoverzicht")
-    s1[0].should                  == 57.57
-    s1[1].should                  == 50.00
-  end
-=end
 end
 

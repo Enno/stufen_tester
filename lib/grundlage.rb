@@ -1,21 +1,21 @@
 
 GLOBAL_UEBERSCHRIFTEN = {
-# blatt 1 (Global) noch ausdokumentiert
-#  :minijob_ok       => "Berechnung ggf. auch im  Minijob-Bereich darstellen",
-#  :durchfuehrungsweg=> "Durchführungsweg",
-#  :verzicht_als_netto=> "Betrag ist der Netto-/ Brutto-Verzicht",
-#  :vl_als_beitrag   => "Verwendung der VL als Beitrag",
-#  :ag_zuschuss      => "Angabe in €/ in % des Umwandlungsbetrages",
-#  :ag_zuschuss_als_absolut=> "Prozent / absolut",
+  # blatt 1 (Global) noch ausdokumentiert
+  #  :minijob_ok       => "Berechnung ggf. auch im  Minijob-Bereich darstellen",
+  #  :durchfuehrungsweg=> "Durchführungsweg",
+  #  :verzicht_als_netto=> "Betrag ist der Netto-/ Brutto-Verzicht",
+  #  :vl_als_beitrag   => "Verwendung der VL als Beitrag",
+  #  :ag_zuschuss      => "Angabe in €/ in % des Umwandlungsbetrages",
+  #  :ag_zuschuss_als_absolut=> "Prozent / absolut",
 }
 
 GLOBALBLATT_NAMEN = {
-  :minijob_ok       => "Berechnung ggf. auch im  Minijob-Bereich darstellen",
-  :durchfuehrungsweg=> "Durchführungsweg",
-  :verzicht_als_netto=> "Betrag ist der Netto-/ Brutto-Verzicht",
-  :vl_als_beitrag   => "Verwendung der VL als Beitrag",
-  :ag_zuschuss      => "Angabe in €/ in % des Umwandlungsbetrages",
-  :ag_zuschuss_als_absolut=> "Prozent / absolut",
+  :MinijobOK                    => "Berechnung ggf. auch im  Minijob-Bereich darstellen",
+  :Durchführungsweg             => "Durchführungsweg",
+  :NettoOderBrutto              => "Betrag ist der Netto-/ Brutto-Verzicht",
+  :VLAlsBeitragVerwenden        => "Verwendung der VL als Beitrag",
+  :ArbeitgeberZuschuss          => "Angabe in €/ in % des Umwandlungsbetrages",
+  :AGZuschussProzentOderAbsolut => "Prozent / absolut",
   
 }
 

@@ -41,6 +41,7 @@ end
 class ExcelLeser #< ExcelController
   def initialize(pfad, global_name, tabelle_name)
     @tabelle_name = tabelle_name
+    @global_name = global_name
     WIN32OLE.codepage = WIN32OLE::CP_UTF8 #zeichen als unicode verarbeiten
     @excel_controller = ExcelController.new(pfad)
     @excel_controller.open_excel_file(pfad)
@@ -49,7 +50,7 @@ class ExcelLeser #< ExcelController
     # der datensaetze im excelsheet "Tabelle"
   end
 
-  def zeile_als_array(zeilen_nr)
+  def zeile_als_array(zeilen_nr) #liest eine zeile aus dem blatt "tabelle" ein
     @xlapp.WorkSheets(@tabelle_name).Rows(zeilen_nr).Value.first
   end
 
@@ -73,22 +74,23 @@ class ExcelLeser #< ExcelController
     return erg
   end
 
-  def spalte(spalten_name)
+  def namenfeld_wert(namenfeld_bez)
+    @xlapp.WorkSheets(@global_name).Range(namenfeld_bez).Value
+    #    if nmfld.Name.ValidWorkbookParameter
+    #    return nmfld.value
+    #    else
+    #      raise "Namenfeld '#{namenfeld_bez}' auf dem Blatt '#{@global_name}' nicht gefunden"
+    #    end
+  end
+
+  def namenfeld
     erg = {}
-    spalte_vorhanden = @xlapp.WorkSheets(@tabelle_name).Cells(1,1).
-      Find(spalten_name[0..6]).Activate
-    if spalte_vorhanden
-      aktuelle_spalte, aktuelle_zeile = @xlapp.WorkSheets(@tabelle_name).
-        Cells(1,1).Find(spalten_name[0..6]).Address.scan(/\w+/)
-      anzahl_datensaetze = @xlapp.WorkSheets(@tabelle_name).
-        UsedRange.Rows.count - aktuelle_zeile.to_i - @leerzeilen
-      for i in 0..anzahl_datensaetze - 1 do
-        erg[i] = @xlapp.WorkSheets(@tabelle_name).
-          Range("#{aktuelle_spalte}#{aktuelle_zeile}").
-          Offset(@leerzeilen + 1 + i, 0).value
-      end
-      return erg
+    GLOBALBLATT_NAMEN.each do |namenfeld_bezeichnung, namenfeld_vorgegeben|
+      aktuelles_namenfeld = namenfeld_wert(namenfeld_bezeichnung.to_s)
+      #puts aktuelles_namenfeld
+      erg[namenfeld_bezeichnung] = aktuelles_namenfeld
     end
+    return erg
   end
 
   def excel_beenden
