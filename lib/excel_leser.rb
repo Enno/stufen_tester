@@ -87,7 +87,6 @@ class ExcelLeser #< ExcelController
     erg = {}
     GLOBALBLATT_NAMEN.each do |namenfeld_bezeichnung, namenfeld_vorgegeben|
       aktuelles_namenfeld = namenfeld_wert(namenfeld_bezeichnung.to_s)
-      #puts aktuelles_namenfeld
       erg[namenfeld_bezeichnung] = aktuelles_namenfeld
     end
     return erg

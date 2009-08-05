@@ -1,4 +1,3 @@
-# enconding: utf8
 
 require File.dirname(File.dirname(__FILE__)) +  '/lib/excel_leser.rb'
 
@@ -23,8 +22,6 @@ describe ExcelLeser do
     ues.first.should == "Name, Vorname"
   end
 
-
-
   it "sollte auf die Methode 'zeile' reagieren und einen Hash zurückgeben" do
     @el.zeile(22).is_a?(Hash).should be_true
   end
@@ -38,7 +35,6 @@ describe ExcelLeser do
 
   it "sollte Zeile 21 korrekt einlesen" do
     z21 = @el.zeile(21)
-    # z21[:name][0..6].should                  == "Gerda M" #üller"
     z21[:name].should                  == "Gerda Müller"
     z21[:berufsgruppe].should          == "Angestellte/Arbeiter"
   end
