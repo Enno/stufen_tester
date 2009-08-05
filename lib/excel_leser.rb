@@ -75,7 +75,11 @@ class ExcelLeser #< ExcelController
   end
 
   def namenfeld_wert(namenfeld_bez)
-    @xlapp.WorkSheets(@global_name).Range(namenfeld_bez).Value
+    begin
+      erg = @xlapp.WorkSheets(@global_name).Range(namenfeld_bez).Value
+    rescue WIN32OLERuntimeError       
+      nil
+    end
     #    if nmfld.Name.ValidWorkbookParameter
     #    return nmfld.value
     #    else

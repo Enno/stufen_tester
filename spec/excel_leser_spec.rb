@@ -12,6 +12,7 @@ describe ExcelLeser do
     @el.excel_beenden
   end
 
+#=begin
   it "sollte existieren" do
     @el.should_not be_nil
   end
@@ -50,9 +51,9 @@ describe ExcelLeser do
     s23[:bland_wohnsitz].should   == "Hessen"
     s23[:bland_arbeit].should     == "Niedersachsen"
   end
-
+#=end
   it "sollte auch die globalen Werte einlesen" do
-    nf = @el.namenfeld
+    nf = @el.zeile(21)
     nf[:MinijobOK].should                    == "nein"
     nf[:Durchführungsweg].should             == "Direktversicherung"
     nf[:NettoOderBrutto].should              == "netto"
