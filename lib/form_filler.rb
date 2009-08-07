@@ -46,7 +46,7 @@ class FormFiller
   end
 
   def eingabe_bestaetigen
-    @masken_controller.sende_tasten(@fenstername, "{ENTER}", :wartezeit => 1)
+    @masken_controller.sende_tasten(@fenstername, "{ENTER}") #, :wartezeit => 0.1)
   end
 
   def zeichen_senden(zeichen)    
