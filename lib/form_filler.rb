@@ -17,38 +17,40 @@ class FormFiller
     @excel_controller = ExcelController.new(pfad + dateiname)
     @excel_controller.open_excel_file(pfad + dateiname)
     @xlapp = @excel_controller.excel_appl
-    @masken_controller = TastenSender.new()
+    @masken_controller = TastenSender.new(:wartezeit => 0.02)
+
     @feld_kinderlos_aktiv = true
     @feld_pauschalverst_aktiv = true
     @feld_minijob_aktiv = true
     @fenstername = "Microsoft Excel - #{@dateiname}"
+
+    #@masken_fueller = TastenSender.new()
   end
 
   def maske_oeffnen
     #@xlapp.Run "#{@datei_name}!#{@proc_name}"
-    @masken_controller.sende_tasten(@fenstername, "%{F8}#{@proc_name}%{a}", :wartezeit => 2.5, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
-    sleep(2)
+    @masken_controller.sende_tasten(@fenstername, "%{F8}#{@proc_name}%{a}", :wartezeit => 0.1, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
+    #sleep(2)
   end
 
   def feld_vor(anzahl)
     anzahl_tabs = "{TAB}"
     anzahl_tabs = anzahl_tabs*anzahl
-    TastenSender.new().sende_tasten(@fenstername, "#{anzahl_tabs}")
+    @masken_controller.sende_tasten(@fenstername, "#{anzahl_tabs}")
   end
 
   def feld_zurueck(anzahl)
     anzahl_tabs = "+{TAB}"
     anzahl_tabs = anzahl_tabs*anzahl
-    TastenSender.new().sende_tasten(@fenstername, "#{anzahl_tabs}")
+    @masken_controller.sende_tasten(@fenstername, "#{anzahl_tabs}")
   end
 
   def eingabe_bestaetigen
-    TastenSender.new().sende_tasten(@fenstername, "{ENTER}", :wartezeit => 1)
+    @masken_controller.sende_tasten(@fenstername, "{ENTER}", :wartezeit => 1)
   end
 
-  def zeichen_senden(zeichen)
-    @masken_fueller = TastenSender.new()
-    @masken_fueller.sende_tasten(@fenstername, "#{zeichen}")
+  def zeichen_senden(zeichen)    
+    @masken_controller.sende_tasten(@fenstername, "#{zeichen}")
   end
 
   def maske_fuellen(zeile)
@@ -144,7 +146,7 @@ class FormFiller
 
   def berechnung_starten #besser waere es, wenn der button "ergebnis" direkt angesprochen werden kann
     eingabe_bestaetigen
-    sleep(2)
+    sleep(0.1)
     eingabe_bestaetigen
   end
 
