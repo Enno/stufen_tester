@@ -49,7 +49,7 @@ describe FormFiller do
 #  end
   
   it "sollte MinijobOK korrekt eintragen" do
-    @ff.maske_fuellen(:minijob_ok => "ja", :bruttogehalt => 2000)
+    @ff.maske_fuellen(:minijob_ok => true, :bruttogehalt => 2000)
     @ff.vb_senden("Abfrage_Feld_Minijob").should == true
   end
 =begin

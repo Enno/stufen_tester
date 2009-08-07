@@ -53,6 +53,12 @@ class ExcelLeser #< ExcelController
         erg[namenfeld_bezeichnung] = aktuelles_namenfeld
       end
     end
+    EXCEL_EINLESE_TRANSFORMATIONEN.each do |key, trafo_hash|
+      alter_wert = erg[key]
+      neuer_wert = trafo_hash[alter_wert]
+      erg[key] = neuer_wert
+     #alternative: erg[key] = trafo_hash[erg[key]]
+    end
     return erg
   end
 

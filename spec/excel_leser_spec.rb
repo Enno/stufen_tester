@@ -54,7 +54,7 @@ describe ExcelLeser do
 #=end
   it "sollte auch die globalen Werte einlesen" do
     nf = @el.zeile(23)
-    nf[:minijob_ok].should                    == "nein"
+    nf[:minijob_ok].should                    == false
     nf[:durchfuehrungsweg].should             == "Direktversicherung"
     nf[:verzicht_als_netto].should            == "netto"
     nf[:vl_als_beitrag].should                == "ja"
