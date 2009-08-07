@@ -22,8 +22,8 @@ class FormFiller
     @feld_kinderlos_aktiv = true
     @feld_pauschalverst_aktiv = true
     @feld_minijob_aktiv = true
-    #@fenstername = "Microsoft Excel - #{@dateiname}"
-    @fenstername = 'Microsoft Excel' #fuer office 07 anwendungen
+    @fenstername = "Microsoft Excel - #{@dateiname}" # für Office XP/2002
+    #@fenstername = 'Microsoft Excel' #fuer office 07 anwendungen
     #@masken_fueller = TastenSender.new()
   end
 

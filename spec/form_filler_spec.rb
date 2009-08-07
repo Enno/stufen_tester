@@ -34,19 +34,30 @@ describe FormFiller do
       :verzicht_als_netto => "brutto")
     @ff.vb_senden("Abfrage_Feld_kinderfreibetraege").should == 2
   end
-#
-#  it "sollte Verzichts-Betrag korrekt eintragen" do
-#    betrag = 43 # 43.5 funzt nicht
-#    @ff.maske_fuellen(:verzicht_als_netto => "brutto",
-#      :verzicht_betrag => betrag,
-#      :bruttogehalt => 2000,
-#      :ag_zuschuss => 20,
-#      :ag_zuschuss_als_absolut => "€")
-#    @ff.vb_senden("Abfrage_Feld_nvz_betrag").should == 43
-#    @ff.vb_senden("Abfrage_Feld_AG_Zuschuss").should == true
-#    @ff.vb_senden("Abfrage_Feld_ag_prozent").should == false
-#    @ff.vb_senden("Abfrage_Feld_AG_Beitrag").should == 20
-#  end
+
+  it "sollte Verzichts-Betrag korrekt eintragen" do
+    betrag = 43
+    @ff.maske_fuellen(:verzicht_als_netto => "brutto",
+      :verzicht_betrag => betrag,
+      :bruttogehalt => 2000,
+      :ag_zuschuss => 20,
+      :ag_zuschuss_als_absolut => "€")
+    @ff.vb_senden("Abfrage_Feld_nvz_betrag").should == 43
+    @ff.vb_senden("Abfrage_Feld_AG_Zuschuss").should == true
+    @ff.vb_senden("Abfrage_Feld_ag_prozent").should == false
+    @ff.vb_senden("Abfrage_Feld_AG_Beitrag").should == 20
+  end
+
+  it "sollte Kommazahlen korekt eintragen" do
+    brutto_betrag = 2000.50
+    kfb = 2.5
+    zeile = {:name => "Max Peter", :bruttogehalt => brutto_betrag,
+             :kinder_fb => kfb
+    }
+    @ff.maske_fuellen(zeile)
+    @ff.vb_senden("Abfrage_Feld_gehalt").should == brutto_betrag
+    @ff.vb_senden("Abfrage_Feld_kinderfreibetraege").should == kfb
+  end
   
   it "sollte MinijobOK korrekt eintragen" do
     @ff.maske_fuellen(:minijob_ok => true, :bruttogehalt => 2000)
