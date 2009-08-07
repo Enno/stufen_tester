@@ -39,3 +39,7 @@ SPALTEN_UEBERSCHRIFTEN = {
   :berufsgruppe     => /Berufsgruppe/,
   :pausch_steuer40b	=> /Pauschalversteuerung Nach \s40b EStG wird aktuell genutzt/
 }
+
+EXCEL_EINLESE_TRANSFORMATIONEN = {
+  :minijob_ok               => {"ja" => true, "nein" => false}
+}

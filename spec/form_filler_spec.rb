@@ -24,7 +24,7 @@ describe FormFiller do
     @ff.maske_fuellen(zeile)
     @ff.vb_senden("Abfrage_Feld_name").should == "Max Peter"
   end
-  
+
   it "sollte Kinderfreibetrag korrekt eintragen" do
     @ff.maske_fuellen(:bruttogehalt => 2000,
       :k_vers_art => "g",
@@ -34,23 +34,25 @@ describe FormFiller do
       :verzicht_als_netto => "brutto")
     @ff.vb_senden("Abfrage_Feld_kinderfreibetraege").should == 2
   end
-
-  it "sollte Verzichts-Betrag korrekt eintragen" do
-    betrag = 43 # 43.5 funzt nicht
-    @ff.maske_fuellen(:verzicht_als_netto => "brutto",
-      :verzicht_betrag => betrag,
-      :bruttogehalt => 2000,
-      :ag_zuschuss => 20,
-      :ag_zuschuss_als_absolut => "€")
-    @ff.vb_senden("Abfrage_Feld_nvz_betrag").should == 43
-    @ff.vb_senden("Abfrage_Feld_AG_Zuschuss").should == true
-    @ff.vb_senden("Abfrage_Feld_ag_prozent").should == false
-    @ff.vb_senden("Abfrage_Feld_AG_Beitrag").should == 20
-  end
+#
+#  it "sollte Verzichts-Betrag korrekt eintragen" do
+#    betrag = 43 # 43.5 funzt nicht
+#    @ff.maske_fuellen(:verzicht_als_netto => "brutto",
+#      :verzicht_betrag => betrag,
+#      :bruttogehalt => 2000,
+#      :ag_zuschuss => 20,
+#      :ag_zuschuss_als_absolut => "€")
+#    @ff.vb_senden("Abfrage_Feld_nvz_betrag").should == 43
+#    @ff.vb_senden("Abfrage_Feld_AG_Zuschuss").should == true
+#    @ff.vb_senden("Abfrage_Feld_ag_prozent").should == false
+#    @ff.vb_senden("Abfrage_Feld_AG_Beitrag").should == 20
+#  end
   
   it "sollte MinijobOK korrekt eintragen" do
     @ff.maske_fuellen(:minijob_ok => "ja", :bruttogehalt => 2000)
     @ff.vb_senden("Abfrage_Feld_Minijob").should == true
   end
+=begin
+=end
 end
 
