@@ -19,91 +19,139 @@ class FormFiller
     @xlapp = @excel_controller.excel_appl
     @masken_controller = TastenSender.new()
     @feld_kinderlos_aktiv = true
+    @feld_pauschalverst_aktiv = true
+    @feld_minijob_aktiv = true
   end
 
   def maske_oeffnen
     #@xlapp.Run "#{@datei_name}!#{@proc_name}"
-    @masken_controller.sende_tasten('Microsoft Excel', "%{F8}#{@proc_name}%{a}")
+    @masken_controller.sende_tasten('Microsoft Excel', "%{F8}#{@proc_name}%{a}", :wartezeit => 1)
+    sleep(2)
   end
 
-  def naechstes_feld(anzahl)
+  def feld_vor(anzahl)
     anzahl_tabs = "{TAB}"
     anzahl_tabs = anzahl_tabs*anzahl
     TastenSender.new().sende_tasten('Microsoft Excel', "#{anzahl_tabs}")
   end
+
+  def feld_zurueck(anzahl)
+    anzahl_tabs = "+{TAB}"
+    anzahl_tabs = anzahl_tabs*anzahl
+    TastenSender.new().sende_tasten('Microsoft Excel', "#{anzahl_tabs}")
+  end
+
   def eingabe_bestaetigen
     TastenSender.new().sende_tasten('Microsoft Excel', "{ENTER}", :wartezeit => 1)
   end
 
+  def zeichen_senden(zeichen)
+    @masken_fueller = TastenSender.new()
+    @masken_fueller.sende_tasten('Microsoft Excel', "#{zeichen}")
+  end
+
   def maske_fuellen(zeile)
     maske_oeffnen
-    @masken_fueller = TastenSender.new()
     #Blatt 1
-    @masken_fueller.
-      sende_tasten('Microsoft Excel', "#{zeile[:name]}")
-    naechstes_feld(1)
-    @masken_fueller.
-      sende_tasten('Microsoft Excel', "#{zeile[:bruttogehalt]}")
-    naechstes_feld(1)
-    @masken_fueller.
-      sende_tasten('Microsoft Excel', "#{zeile[:freibetrag]}")
-    naechstes_feld(1)
+    zeichen_senden(zeile[:name]);  feld_vor(1)
+    zeichen_senden(zeile[:bruttogehalt]);  feld_vor(1)
+    zeichen_senden(zeile[:freibetrag]);  feld_vor(1)
     if zeile[:k_vers_art] == "p"
-      naechstes_feld(1)
-      @masken_fueller.sende_tasten('Microsoft Excel', " ")
-      feld_kinderlos_aktiv = false
+      feld_vor(1);  zeichen_senden(' ')
+      @feld_kinderlos_aktiv = false
     else
-      @masken_fueller.sende_tasten('Microsoft Excel', " ")
-      naechstes_feld(1)
-      feld_kinderlos_aktiv = true
+      zeichen_senden(' ');  feld_vor(1)
     end 
-    naechstes_feld(1)
-    @masken_fueller.
-      sende_tasten('Microsoft Excel', "#{zeile[:steuerklasse]}")
-    naechstes_feld(1)
-    @masken_fueller.
-      sende_tasten('Microsoft Excel', "#{zeile[:kinder_fb]}")
-    naechstes_feld(1)
-    if zeile[:kirchensteuer] == "n"
-      @masken_fueller.sende_tasten('Microsoft Excel', " ")
+    feld_vor(1)
+    zeichen_senden(zeile[:steuerklasse]);  feld_vor(1)
+    zeichen_senden(zeile[:kinder_fb]);  feld_vor(1)
+    zeichen_senden(' ') if zeile[:kirchensteuer] == "n"
+    feld_vor(1)
+    zeichen_senden(zeile[:bland_wohnsitz]);  feld_vor(1)
+    zeichen_senden(zeile[:bland_arbeit]);  feld_vor(1)
+    if zeile[:berufsgruppe] == "Azubi"
+      zeichen_senden('{DOWN}')
+    elsif zeile[:berufsgruppe] == "sozialvers.freier GGF"
+      zeichen_senden('{DOWN}')
+      zeichen_senden('{DOWN}')
+      @feld_minijob_aktiv = false
+      @feld_kinderlos_aktiv = false
     end
-    naechstes_feld(1)
-    @masken_fueller.
-      sende_tasten('Microsoft Excel', "#{zeile[:bland_wohnsitz]}")
-    naechstes_feld(1)
-    @masken_fueller.
-      sende_tasten('Microsoft Excel', "#{zeile[:bland_arbeit]}")
-    naechstes_feld(1)
-    @masken_fueller.
-      sende_tasten('Microsoft Excel', "#{zeile[:berufsgruppe]}")
-    naechstes_feld(1)
-    @masken_fueller.
-      sende_tasten('Microsoft Excel', "#{zeile[:durchfuehrungsweg]}")
-    naechstes_feld(1)
-    @masken_fueller.
-      sende_tasten('Microsoft Excel', "#{zeile[:pausch_steuer40b]}")
-    naechstes_feld(1)
-    @masken_fueller.
-      sende_tasten('Microsoft Excel', "#{zeile[:minijob_ok ]}")
-    naechstes_feld(1)
-    if feld_kinderlos_aktiv == true
-      if zeile[:kinderlos] == "j"
-        @masken_fueller.sende_tasten('Microsoft Excel', " ")
-      end
-      naechstes_feld(1)
+    feld_vor(1) # defaultbelegung "angestellte/arbeiter"
+    if zeile[:durchfuehrungsweg] == "Pensionskasse"
+      zeichen_senden('{DOWN}')
+    elsif zeile[:durchfuehrungsweg] == "Unterstützungskasse"
+      zeichen_senden('{DOWN}')
+      zeichen_senden('{DOWN}')
+      @feld_pauschalverst_aktiv = false
     end
-    eingabe_bestaetigen
-    eingabe_bestaetigen
-    naechstes_feld(1)
-    # @masken_fueller.sende_tasten('Microsoft Excel', "%j", :wartezeit => 1)
+    feld_vor(1) #defaultbelegung "Direktversicherung"
+    if @feld_pauschalverst_aktiv == true
+      zeichen_senden(' ') if zeile[:pausch_steuer40b] == "j"
+      feld_vor(1)
+    end
+    if @feld_minijob_aktiv == true
+      zeichen_senden(' ') if zeile[:minijob_ok] == "ja"
+      feld_vor(1)
+    end
+    if @feld_kinderlos_aktiv == true
+      zeichen_senden(' ') if zeile[:kinderlos] == "j"
+      feld_vor(1)
+    end
+    feld_vor(5)
+ 
     #Blatt 2
+    zeichen_senden('{RIGHT}')
+    feld_zurueck(6)
+    #anfang des 2 Blattes
+    zeichen_senden('{TAB}') #umwandlung von bestandteilen des einkommens
+    feld_vor(1) #erst netto / brutto feld auswaehlen
+    if zeile[:verzicht_als_netto] == "brutto"
+      feld_vor(1);  zeichen_senden(' ')
+    else
+      zeichen_senden(' ');  feld_zurueck(1)
+    end
+    zeichen_senden(zeile[:verzicht_betrag])
+    feld_vor(5)
+
+    #Blatt 3
+    zeichen_senden('{RIGHT}')
+    feld_zurueck(5)
+    #anfang des 3 Blattes
+    zeichen_senden(zeile[:vl_arbeitgeber]);  feld_vor(1)
+    zeichen_senden('{TAB}'); feld_vor(1) #ueberweisung vl
+    zeichen_senden(' ') if zeile[:vl_als_beitrag] == "nein"
+    feld_vor(3)
+
+    #Blatt 4
+    zeichen_senden('{RIGHT}')
+    if zeile[:ag_zuschuss] == 0 || zeile[:ag_zuschuss] == nil
+      feld_zurueck(2)
+      #ergebnis-button des 4 blattes
+    else
+      feld_zurueck(3)
+      #anfang des 4 blattes
+      zeichen_senden(' ')
+      if zeile[:ag_zuschuss_als_absolut] == "%"
+        feld_zurueck(1)
+        zeichen_senden(' ')
+      end
+      zeichen_senden(zeile[:ag_zuschuss]); feld_vor(1)
+    end
+    berechnung_starten
+  end
+
+  def berechnung_starten #besser waere es, wenn der button "ergebnis" direkt angesprochen werden kann
+    eingabe_bestaetigen
+    sleep(2)
+    eingabe_bestaetigen
   end
 
   def vb_senden(vb_abfrage)
-    @xlapp.Run "#{@datei_name}!#{vb_abfrage}" #(vb_abfrage)
+    @xlapp.Run "#{@datei_name}!#{vb_abfrage}"
   end
 
-  def maske_schliessen
+  def maske_schliessen #ueber button "schliessen" siehe kommentar "berechnung_starten"
     @xlapp.ActiveWorkbook.Close
   end
 

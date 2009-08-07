@@ -4,7 +4,7 @@ require 'win32ole'
 class TastenSender
   def initialize(optionen={})
     @wsh = WIN32OLE.new('Wscript.Shell')
-    @wartezeit = optionen[:wartezeit] || 0.5
+    @wartezeit = optionen[:wartezeit] || 0.2
   end
 
   def sende_tasten(fenstername, tastenfolge, optionen={})
