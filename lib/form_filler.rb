@@ -12,8 +12,8 @@ require 'tasten_sender'
 class FormFiller 
  
   def initialize(pfad, dateiname, start_proc_name)
+    @dateiname = dateiname
     @proc_name = start_proc_name
-    @datei_name = dateiname
     @excel_controller = ExcelController.new(pfad + dateiname)
     @excel_controller.open_excel_file(pfad + dateiname)
     @xlapp = @excel_controller.excel_appl
@@ -21,33 +21,34 @@ class FormFiller
     @feld_kinderlos_aktiv = true
     @feld_pauschalverst_aktiv = true
     @feld_minijob_aktiv = true
+    @fenstername = "Microsoft Excel - #{@dateiname}"
   end
 
   def maske_oeffnen
     #@xlapp.Run "#{@datei_name}!#{@proc_name}"
-    @masken_controller.sende_tasten('Microsoft Excel', "%{F8}#{@proc_name}%{a}", :wartezeit => 1)
+    @masken_controller.sende_tasten(@fenstername, "%{F8}#{@proc_name}%{a}", :wartezeit => 2.5, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
     sleep(2)
   end
 
   def feld_vor(anzahl)
     anzahl_tabs = "{TAB}"
     anzahl_tabs = anzahl_tabs*anzahl
-    TastenSender.new().sende_tasten('Microsoft Excel', "#{anzahl_tabs}")
+    TastenSender.new().sende_tasten(@fenstername, "#{anzahl_tabs}")
   end
 
   def feld_zurueck(anzahl)
     anzahl_tabs = "+{TAB}"
     anzahl_tabs = anzahl_tabs*anzahl
-    TastenSender.new().sende_tasten('Microsoft Excel', "#{anzahl_tabs}")
+    TastenSender.new().sende_tasten(@fenstername, "#{anzahl_tabs}")
   end
 
   def eingabe_bestaetigen
-    TastenSender.new().sende_tasten('Microsoft Excel', "{ENTER}", :wartezeit => 1)
+    TastenSender.new().sende_tasten(@fenstername, "{ENTER}", :wartezeit => 1)
   end
 
   def zeichen_senden(zeichen)
     @masken_fueller = TastenSender.new()
-    @masken_fueller.sende_tasten('Microsoft Excel', "#{zeichen}")
+    @masken_fueller.sende_tasten(@fenstername, "#{zeichen}")
   end
 
   def maske_fuellen(zeile)
@@ -148,7 +149,7 @@ class FormFiller
   end
 
   def vb_senden(vb_abfrage)
-    @xlapp.Run "#{@datei_name}!#{vb_abfrage}"
+    @xlapp.Run "#{@dateiname}!#{vb_abfrage}"
   end
 
   def maske_schliessen #ueber button "schliessen" siehe kommentar "berechnung_starten"
