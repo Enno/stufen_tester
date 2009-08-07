@@ -22,15 +22,15 @@ class FormFiller
     @feld_kinderlos_aktiv = true
     @feld_pauschalverst_aktiv = true
     @feld_minijob_aktiv = true
-    @fenstername = "Microsoft Excel - #{@dateiname}"
-
+    #@fenstername = "Microsoft Excel - #{@dateiname}"
+    @fenstername = 'Microsoft Excel' #fuer office 07 anwendungen
     #@masken_fueller = TastenSender.new()
   end
 
   def maske_oeffnen
     #@xlapp.Run "#{@datei_name}!#{@proc_name}"
-    @masken_controller.sende_tasten(@fenstername, "%{F8}#{@proc_name}%{a}", :wartezeit => 0.1, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
-    #sleep(2)
+    @masken_controller.sende_tasten(@fenstername, "%{F8}#{@proc_name}%{a}", :wartezeit => 0.2, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
+    sleep(0.3)
   end
 
   def feld_vor(anzahl)
