@@ -47,7 +47,7 @@ class FormFiller
   end
 
   def eingabe_bestaetigen
-    tasten_senden( "{ENTER}") #, :wartezeit => 0.1)
+    tasten_senden("{ENTER}", :wartezeit => 0.1)
   end
 
   def tasten_senden(zeichen, optionen = {})
@@ -55,24 +55,37 @@ class FormFiller
   end
 
   @@register_karten = [
-    {:felder => [ :name,
+    {:felder_blatt1 => [
+        :name,
         :bruttogehalt,
         :freibetrag,
         {:k_vers_art => ["g","p"]},
         :steuerklasse,
         :kinder_fb,
-        :kirchensteuer,
+        {:kirchensteuer => true},
         :bland_wohnsitz,
         :bland_arbeit,
         :berufsgruppe,
         :durchfuehrungsweg,
-        :pausch_steuer40b,
+        {:pausch_steuer40b => false},
         {:minijob_ok => false},
-        :kinderlos
-      ],
-      :anzahl_zurueck => 5
-    }
-
+        {:kinderlos => false},
+      ]},
+    {:felder_blatt2 => [
+        {:umwandlgvon_keine_ahnung_welches_feld => false},
+        :verzicht_betrag,
+        {:verzicht_als_netto => ["netto", "brutto"]}
+      ]},
+    {:felder_blatt3 => [
+      :vl_arbeitgeber,
+      :ueberweisungvl_keine_ahnung_welches_feld,
+      {:vl_als_beitrag => true}
+    ]},
+    {:felder_blatt4 => [
+      {:ag_zuschuss_ok_weiss_noch_nicht_wie_umsetzen_abhaengig_von_ag_zuschuss => false},
+      {:ag_zuschuss_als_absolut => ["€", "%"]},
+      :ag_zuschuss
+    ]}
   ]
 
   def wert_eintragen_fuer(datensatz, symbol_oder_hash)
@@ -110,110 +123,20 @@ class FormFiller
 
   def maske_fuellen(datensatz)
     maske_oeffnen
-
-    letzte_anzahl_zurueck = nil
+    register_karten_index = 1
     @@register_karten.each do |karten_beschreibung|
-      felder_in_karte = karten_beschreibung[:felder]
+      felder_des_aktuellen_blattes = "felder_blatt#{register_karten_index}".to_sym
+      felder_in_karte = karten_beschreibung[felder_des_aktuellen_blattes]
       felder_in_karte.each do |feld_info|
         wert_eintragen_fuer(datensatz, feld_info)
       end
-      letzte_anzahl_zurueck = karten_beschreibung[:anzahl_zurueck]
+      feld_vor(15)
+      break if register_karten_index == 4
+      tasten_senden('{RIGHT}')
+      feld_zurueck(15)
+      register_karten_index += 1
     end
-    feld_vor(15)
-    feld_zurueck(letzte_anzahl_zurueck)
-    berechnung_starten
-  end
-
-
-
-  def xxx_maske_fuellen(zeile)
-    maske_oeffnen
-    #Blatt 1
-    tasten_senden(zeile[:name]);  feld_vor(1)
-    tasten_senden(zeile[:bruttogehalt]);  feld_vor(1)
-    tasten_senden(zeile[:freibetrag]);  feld_vor(1)
-    if zeile[:k_vers_art] == "p"
-      feld_vor(1);  tasten_senden(' ')
-      @feld_kinderlos_aktiv = false
-    else
-      tasten_senden(' ');  feld_vor(1)
-    end 
-    feld_vor(1)
-    tasten_senden(zeile[:steuerklasse]);  feld_vor(1)
-    tasten_senden(zeile[:kinder_fb]);  feld_vor(1)
-    tasten_senden(' ') if zeile[:kirchensteuer] == "n"
-    feld_vor(1)
-    tasten_senden(zeile[:bland_wohnsitz]);  feld_vor(1)
-    tasten_senden(zeile[:bland_arbeit]);  feld_vor(1)
-    if zeile[:berufsgruppe] == "Azubi"
-      tasten_senden('{DOWN}')
-    elsif zeile[:berufsgruppe] == "sozialvers.freier GGF"
-      tasten_senden('{DOWN}')
-      tasten_senden('{DOWN}')
-      @feld_minijob_aktiv = false
-      @feld_kinderlos_aktiv = false
-    end
-    feld_vor(1) # defaultbelegung "angestellte/arbeiter"
-    if zeile[:durchfuehrungsweg] == "Pensionskasse"
-      tasten_senden('{DOWN}')
-    elsif zeile[:durchfuehrungsweg] == "Unterstützungskasse"
-      tasten_senden('{DOWN}')
-      tasten_senden('{DOWN}')
-      @feld_pauschalverst_aktiv = false
-    end
-    feld_vor(1) #defaultbelegung "Direktversicherung"
-    if @feld_pauschalverst_aktiv == true
-      tasten_senden(' ') if zeile[:pausch_steuer40b] == "j"
-      feld_vor(1)
-    end
-    if @feld_minijob_aktiv == true
-      tasten_senden(' ') if zeile[:minijob_ok] == "ja"
-      feld_vor(1)
-    end
-    if @feld_kinderlos_aktiv == true
-      tasten_senden(' ') if zeile[:kinderlos] == "j"
-      feld_vor(1)
-    end
-    feld_vor(5)
- 
-    #Blatt 2
-    tasten_senden('{RIGHT}')
-    feld_zurueck(6)
-    #anfang des 2 Blattes
-    tasten_senden('{TAB}') #umwandlung von bestandteilen des einkommens
-    feld_vor(1) #erst netto / brutto feld auswaehlen
-    if zeile[:verzicht_als_netto] == "brutto"
-      feld_vor(1);  tasten_senden(' ')
-    else
-      tasten_senden(' ');  feld_zurueck(1)
-    end
-    tasten_senden(zeile[:verzicht_betrag])
-    feld_vor(5)
-
-    #Blatt 3
-    tasten_senden('{RIGHT}')
-    feld_zurueck(5)
-    #anfang des 3 Blattes
-    tasten_senden(zeile[:vl_arbeitgeber]);  feld_vor(1)
-    tasten_senden('{TAB}'); feld_vor(1) #ueberweisung vl
-    tasten_senden(' ') if zeile[:vl_als_beitrag] == "nein"
-    feld_vor(3)
-
-    #Blatt 4
-    tasten_senden('{RIGHT}')
-    if zeile[:ag_zuschuss] == 0 || zeile[:ag_zuschuss] == nil
-      feld_zurueck(2)
-      #ergebnis-button des 4 blattes
-    else
-      feld_zurueck(3)
-      #anfang des 4 blattes
-      tasten_senden(' ')
-      if zeile[:ag_zuschuss_als_absolut] == "%"
-        feld_zurueck(1)
-        tasten_senden(' ')
-      end
-      tasten_senden(zeile[:ag_zuschuss]); feld_vor(1)
-    end
+    feld_zurueck(2)
     berechnung_starten
   end
 

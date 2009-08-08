@@ -41,5 +41,9 @@ SPALTEN_UEBERSCHRIFTEN = {
 }
 
 EXCEL_EINLESE_TRANSFORMATIONEN = {
-  :minijob_ok               => {"ja" => true, "nein" => false}
-}
+  :minijob_ok               => {"ja" => true, "nein" => false},
+  :kirchensteuer            => {"j" => true, "n" => false},
+  :vl_als_beitrag           => {"ja" => true, "nein" => false},
+  :kinderlos                => {"j" => true, "n" => false},
+  :pausch_steuer40b         => {"j" => true, "nein" => false}
+  }
