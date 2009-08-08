@@ -18,19 +18,22 @@ class FormFiller
     @excel_controller.open_excel_file(pfad + dateiname)
     @xlapp = @excel_controller.excel_appl
     @masken_controller = TastenSender.new(:wartezeit => 0.2)
-
+ 
     @feld_kinderlos_aktiv = true
     @feld_pauschalverst_aktiv = true
     @feld_minijob_aktiv = true
-    @fenstername = "Microsoft Excel - #{@dateiname}" # für Office XP/2002
-    #@fenstername = 'Microsoft Excel' #fuer office 07 anwendungen
-    #@masken_fueller = TastenSender.new()
+    case @xlapp.version
+    when "12.0"
+      @fenstername = 'Microsoft Excel' #fuer office 07 anwendungen
+    when "11.0"
+      @fenstername = "Microsoft Excel - #{@dateiname}" # für Office XP/2002
+    end
   end
 
   def maske_oeffnen
     #@xlapp.Run "#{@datei_name}!#{@proc_name}"
     @masken_controller.sende_tasten(@fenstername, "%{F8}#{@proc_name}%{a}", :wartezeit => 0.2, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
-    sleep(0.3)
+    sleep(0.5)
   end
 
   def feld_vor(anzahl)
@@ -53,21 +56,21 @@ class FormFiller
 
   @@register_karten = [
     {:felder => [ :name,
-      :bruttogehalt,
-      :freibetrag,
-      {:k_vers_art => ["g","p"]},
-      :steuerklasse,
-      :kinder_fb,
-      :kirchensteuer,
-      :bland_wohnsitz,
-      :bland_arbeit,
-      :berufsgruppe,
-      :durchfuehrungsweg,
-      :pausch_steuer40b,
-      {:minijob_ok => false},
-      :kinderlos
-    ],
-    :anzahl_zurueck => 5
+        :bruttogehalt,
+        :freibetrag,
+        {:k_vers_art => ["g","p"]},
+        :steuerklasse,
+        :kinder_fb,
+        :kirchensteuer,
+        :bland_wohnsitz,
+        :bland_arbeit,
+        :berufsgruppe,
+        :durchfuehrungsweg,
+        :pausch_steuer40b,
+        {:minijob_ok => false},
+        :kinderlos
+      ],
+      :anzahl_zurueck => 5
     }
 
   ]
@@ -86,7 +89,7 @@ class FormFiller
     einzutragender_wert = datensatz[sym]
     case art
     when :direkt
-      tasten_senden(einzutragender_wert)
+      einzutragender_wert.is_a?(Float) ? tasten_senden(dezimalzahl_fuer_office_umwandeln(einzutragender_wert)) : tasten_senden(einzutragender_wert)
       feld_vor(1)
     when :checkbox
       vorbelegung = rechte_seite
@@ -99,6 +102,10 @@ class FormFiller
         feld_vor(1)
       end
     end
+  end
+
+  def dezimalzahl_fuer_office_umwandeln(einzutragender_wert)
+    return einzutragender_wert.to_s.gsub(/[.]/, ',')
   end
 
   def maske_fuellen(datensatz)
