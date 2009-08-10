@@ -43,7 +43,7 @@ class FormFiller
 
   def feld_zurueck(anzahl)
     zu_sendende_tabs = "+{TAB}" * anzahl
-    tasten_senden("#{zu_sendende_tabs}", :wartezeit => 0.01)
+    tasten_senden("#{zu_sendende_tabs}", :wartezeit => 0.501)
   end
 
   def eingabe_bestaetigen
@@ -83,8 +83,8 @@ class FormFiller
     ]},
     {:felder_blatt4 => [
       {:ag_zuschuss_ok_weiss_noch_nicht_wie_umsetzen_abhaengig_von_ag_zuschuss => false},
-      {:ag_zuschuss_als_absolut => ["€", "%"]},
-      :ag_zuschuss
+      #{:ag_zuschuss_als_absolut => ["€", "%"]},
+      #:ag_zuschuss
     ]}
   ]
 
@@ -136,11 +136,14 @@ class FormFiller
       feld_zurueck(15)
       register_karten_index += 1
     end
-    feld_zurueck(2)
+    #feld_zurueck(1)
+    feld_zurueck(1)
+    feld_zurueck(1)
     berechnung_starten
   end
 
   def berechnung_starten #besser waere es, wenn der button "ergebnis" direkt angesprochen werden kann
+    sleep 2
     eingabe_bestaetigen
     sleep(0.1)
     eingabe_bestaetigen
