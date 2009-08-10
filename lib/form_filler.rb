@@ -11,235 +11,204 @@ require 'tasten_sender'
 
 class FormFiller 
  
-  def initialize(pfad, dateiname, start_proc_name)
-    @dateiname = dateiname
+  def initialize(path, file_name, start_proc_name)
+    @file_name = file_name
     @proc_name = start_proc_name
-    @excel_controller = ExcelController.new(pfad + dateiname)
-    @excel_controller.open_excel_file(pfad + dateiname)
+    @excel_controller = ExcelController.new(path + file_name)
+    @excel_controller.open_excel_file(path + file_name)
     @xlapp = @excel_controller.excel_appl
-    @masken_controller = TastenSender.new(:wartezeit => 0.2)
+    @template_controller = TastenSender.new(:wnatureezeit => 0.2)
  
-    @feld_kinderlos_aktiv = true
-    @feld_pauschalverst_aktiv = true
-    @feld_minijob_aktiv = true
-    @automatisch_auf_naechstem_feld = false
-    @rueckwaerts_in_die_zellen_eintragen = false
     case @xlapp.version
     when "12.0"
-      @fenstername = 'Microsoft Excel' #fuer office 07 anwendungen
+      @window_name = 'Microsoft Excel' #fuer office 07 anwendungen
+      @access_to_macro = 1.0
     when "11.0"
-      @fenstername = "Microsoft Excel - #{@dateiname}" # für Office XP/2002
+      @window_name = "Microsoft Excel - #{@file_name}" # für Office XP/2002
+      @access_to_macro = 0.5
     end
   end
 
-  def maske_oeffnen
-    #@xlapp.Run "#{@datei_name}!#{@proc_name}"
-    @masken_controller.sende_tasten(@fenstername, "%{F8}#{@proc_name}%{a}", :wartezeit => 0.2, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
-    sleep(0.5)
+  def open_template
+    @template_controller.sende_tasten(@window_name, "%{F8}#{@proc_name}%{a}", :wnatureezeit => 0.2, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
+    sleep(@access_to_macro)
   end
 
-  def feld_vor(anzahl = 1)
-    return unless anzahl
-    shift_code = anzahl < 0 ? "+" : ""
-    zu_sendende_tabs = "#{shift_code}{TAB}" * anzahl.abs
-    tasten_senden("#{zu_sendende_tabs}", :wartezeit => 0.02)
+  def tab_set(numbers = 1)
+    return unless numbers
+    shift_code = numbers < 0 ? "+" : ""
+    send_tabs = "#{shift_code}{TAB}" * numbers.abs
+    send_keys("#{send_tabs}", :wnatureezeit => 0.02)
   end
 
-  def feld_zurueck(anzahl)
-    feld_vor(-anzahl)
+  def confirm_input
+    send_keys("{ENTER}", :wnatureezeit => 0.2)
   end
 
-  def eingabe_bestaetigen
-    tasten_senden("{ENTER}", :wartezeit => 0.2)
+  def send_keys(character, options = {})
+    @template_controller.sende_tasten(@fenstername, "#{character}", options)
   end
 
-  def tasten_senden(zeichen, optionen = {})
-    @masken_controller.sende_tasten(@fenstername, "#{zeichen}", optionen)
-  end
-
-  SUMMIEREN = proc {|a, b| a + b}
-  @@register_karten = [
-    {:felder_blatt1 => [
-        :name,
-        :bruttogehalt,
-        :freibetrag,
-        {:k_vers_art => ["g","p"]},
-        :steuerklasse,
-        :kinder_fb,
-        {:kirchensteuer => true},
-        :bland_wohnsitz,
-        :bland_arbeit,
-        :berufsgruppe,
-        :durchfuehrungsweg,
-        {:pausch_steuer40b => false},
-        {:minijob_ok => false},
-        {:kinderlos => false},
-      ],
-      #:automatisch_auf_naechstem_feld => false,
-      #:rueckwaerts_eintragen => false
-    },
-    {:felder_blatt2 => [
-        {:umwandlgvon_keine_ahnung_welches_feld => false},
-        :verzicht_betrag,
-        {:verzicht_als_netto => ["netto", "brutto"]}
-      ]
-      #      :automatisch_auf_naechstem_feld => false,
-      #      :rueckwaerts_eintragen => false
-    },
-    {:felder_blatt3 => [
-        :vl_arbeitgeber,
-        {:vl_gesamt => {
-            :art => :direkt,
-            :funktion => SUMMIEREN,
-            :params => [:vl_arbeitgeber, :vl_arbeitnehmer],
-          }},
-        {:vl_als_beitrag => true}
-      ]
-      #      :automatisch_auf_naechstem_feld => false,
-      #      :rueckwaerts_eintragen => false
-    },
-    {:felder_blatt4 => [
-        {:ag_zuschuss_ok => {
-            :art => :checkbox,
-            :vorbelegung  => false,
-            :sprung_korrektur => -3,
-            :macht_aktiv => [:ag_zuschuss, :ag_zuschuss_als_absolut]
-          }},
-        {:ag_zuschuss_als_absolut => {
-            :art => :radio_group,
-            :auswahl_liste => ["€", "%"],
-            :vorbelegung  => "€",
-            :sprung_korrektur => 0
-          }},
-        :ag_zuschuss
-      ],
-
-      #      :sprung_korrektur => {:ag_zuschuss_ok => -2},
-      #      :macht_aktiv => {:ag_zuschuss_ok => [:ag_zuschuss, {:bedingung => proc{|wert| wert == "k"}}]}
-      #:automatisch_auf_naechstem_feld => true,
-      #:rueckwaerts_eintragen => true
-    }
+  SUM = proc {|a, b| a + b}
+  @@records = [
+    [
+      :name,
+      :bruttogehalt,
+      :freibetrag,
+      {:k_vers_nature => ["g","p"]},
+      :steuerklasse,
+      :kinder_fb,
+      {:kirchensteuer => true},
+      :bland_wohnsitz,
+      :bland_arbeit,
+      :berufsgruppe,
+      :durchfuehrungsweg,
+      {:pausch_steuer40b => false},
+      {:minijob_ok => false},
+      {:kinderlos => false},
+    ],[
+      {:umwandlgvon_keine_ahnung_welches_box => false},
+      :verzicht_betrag,
+      {:verzicht_als_netto => ["netto", "brutto"]}
+    ],[
+      :vl_arbeitgeber,
+      {:vl_gesamt => {
+          :nature => :direkt,
+          :function => SUM,
+          :params => [:vl_arbeitgeber, :vl_arbeitnehmer],
+        }},
+      {:vl_als_beitrag => true}
+    ],[
+      {:ag_zuschuss_ok => {
+          :nature => :checkbox,
+          :default_value => false,
+          :skip_adjustment => -3,
+          :activates => [:ag_zuschuss, :ag_zuschuss_als_absolut]
+        }},
+      {:ag_zuschuss_als_absolut => {
+          :nature => :radio_group,
+          :select_list => ["€", "%"],
+          :default_value => "€",
+          :skip_adjustment => 0
+        }},
+      :ag_zuschuss
+    ]
   ]
 
-  def wert_eintragen_fuer(datensatz, symbol_oder_hash)
-    case symbol_oder_hash
+  def identify_value(datset, symbol_or_hash)
+    case symbol_or_hash
     when Symbol
-      art = :direkt
-      sym = symbol_oder_hash
+      nature = :direkt
+      sym = symbol_or_hash
     when Hash
-      rechte_seite = symbol_oder_hash.values.first
-      is_complex = rechte_seite.is_a?(Hash)
-      art = case rechte_seite
-      when Array     then :radio_group
+      right_side = symbol_or_hash.values.first
+      is_complex = right_side.is_a?(Hash)
+      nature = case right_side
+      when Array            then :radio_group
       when true, false      then :checkbox
-        #when false     then :checkbox
-      when Hash      then rechte_seite[:art]
+      when Hash             then right_side[:nature]
       end
-      sym = symbol_oder_hash.keys.first
+      sym = symbol_or_hash.keys.first
     end
 
-    return  if @inaktive_felder.include? sym
+    return  if @non_busy_boxes.include? sym
 
-    einzutragender_wert = if is_complex and rechte_seite[:funktion]
-      param_werte = rechte_seite[:params].map {|symbol| datensatz[symbol] }
-      funktion = rechte_seite[:funktion]
-      funktion[*param_werte]
+    continue_processing_data = if is_complex and right_side[:function]
+      param_values = right_side[:params].map {|symbol| datset[symbol] }
+      function = right_side[:function]
+      function[*param_values]
     else
-      datensatz[sym]
+      datset[sym]
     end
+    preparing_value(nature, right_side, continue_processing_data)
+  end
 
-    # Vor-Verarbeitung
-    
-    vorbelegung = if is_complex then
-      sprung_korrektur = rechte_seite[:sprung_korrektur]
-      auswahl_liste = rechte_seite[:auswahl_liste]
+  # Vor-Verarbeitung
+  def preparing_value(nature, right_side, continue_processing_data)
+    default_value = if right_side.is_a?(Hash) then
+      skip_adjustment = right_side[:skip_adjustment]
+      select_list = right_side[:select_list]
 
-      neue_inaktive = (einzutragender_wert ? [] : rechte_seite[:macht_aktiv])
-      @inaktive_felder += neue_inaktive if neue_inaktive
+      non_busy_boxes_new = (continue_processing_data ? [] : right_side[:activates])
+      @non_busy_boxes += non_busy_boxes_new if non_busy_boxes_new
 
-      rechte_seite[:vorbelegung]
+      right_side[:default_value]
     else
-      sprung_korrektur = nil
-      case art
+      skip_adjustment = 0
+      case nature
       when :checkbox
-        rechte_seite
+        right_side
       when :radio_group
-        auswahl_liste = rechte_seite
+        select_list = right_side
         nil
       end
     end
+    enter_value(continue_processing_data, nature, default_value, skip_adjustment, select_list)
+  end
 
-    case art
+  def enter_value(continue_processing_data, nature, default_value, skip_adjustment, select_list)
+    case nature
     when :direkt
-      einzutragender_wert.is_a?(Float) ? tasten_senden(dezimalzahl_fuer_office_umwandeln(einzutragender_wert)) : tasten_senden(einzutragender_wert)
-      feld_vor
-      #@rueckwaerts_in_die_zellen_eintragen ? feld_zurueck(1) : feld_vor(1)
+      send_keys(continue_processing_data.is_a?(Float) ?
+          (change_decimal_seperation(continue_processing_data)) : (continue_processing_data))
+      tab_set
     when :checkbox
-      tasten_senden(' ') if vorbelegung ^ einzutragender_wert # exclusive or
-      feld_vor 
+      send_keys(' ') if default_value ^ continue_processing_data # exclusive or
+      tab_set
     when :radio_group
-      aendern = (einzutragender_wert != vorbelegung)
-      #puts "ziel: #{einzutragender_wert} #{auswahl_liste.inspect}"
-      auswahl_liste.each do |moegl_wert|
-        #puts moegl_wert
-        if aendern and moegl_wert == einzutragender_wert then
-          tasten_senden(' ')
-          break if sprung_korrektur
+      change = (continue_processing_data != default_value)
+      select_list.each do |feasible_value|
+        if change and feasible_value == continue_processing_data then
+          send_keys(' ')
+          break if skip_adjustment
         end
-        feld_vor
-        #@rueckwaerts_in_die_zellen_eintragen ? feld_zurueck(1) : feld_vor(1)
+        tab_set
       end
     end
-    
-    feld_vor( sprung_korrektur ) 
+    tab_set( skip_adjustment )
   end
 
-  def dezimalzahl_fuer_office_umwandeln(einzutragender_wert)
-    return einzutragender_wert.to_s.gsub(/[.]/, ',')
+  def change_decimal_seperation(continue_processing_data)
+    return continue_processing_data.to_s.gsub(/[.]/, ',')
   end
 
-  def maske_fuellen(datensatz)
-    maske_oeffnen
-    register_karten_index = 1
-    @@register_karten.each do |karten_beschreibung|
-      felder_des_aktuellen_blattes = "felder_blatt#{register_karten_index}".to_sym
-      felder_in_karte = karten_beschreibung[felder_des_aktuellen_blattes]
-      #@automatisch_auf_naechstem_feld = karten_beschreibung[:automatisch_auf_naechstem_feld]
-      #@rueckwaerts_in_die_zellen_eintragen = karten_beschreibung[:rueckwaerts_eintragen]
-      @inaktive_felder = []
-      felder_in_karte.each do |feld_info|
-        wert_eintragen_fuer(datensatz, feld_info)
+  def populate_template(datset)
+    open_template
+    tab_index = 1
+    @@records.each do |boxes_in_actual_tab|
+      @non_busy_boxes = []
+      boxes_in_actual_tab.each do |box_info|
+        identify_value(datset, box_info)
       end
-      feld_vor(25)
-      break if register_karten_index == 4
-      tasten_senden('{RIGHT}')
-      feld_zurueck(25)
-      register_karten_index += 1
+      break if tab_index == 4
+      send_keys('^{PGDN}')
+      tab_index += 1
     end
-    #feld_zurueck(1)
-    feld_zurueck(1)
-    feld_zurueck(1)
-    berechnung_starten
+    start_calculation
   end
 
-  def berechnung_starten #besser waere es, wenn der button "ergebnis" direkt angesprochen werden kann
+  def start_calculation #besser waere es, wenn der button "ergebnis" direkt angesprochen werden kann
     sleep 2
-    eingabe_bestaetigen
+    confirm_input
     sleep(0.1)
-    eingabe_bestaetigen
+    confirm_input
   end
 
-  def vb_senden(vb_abfrage)
-    @xlapp.Run "#{@dateiname}!#{vb_abfrage}"
+  def vb_send(vb_request)
+    @xlapp.Run "#{@file_name}!#{vb_request}"
   end
 
-  def maske_schliessen #ueber button "schliessen" siehe kommentar "berechnung_starten"
+  def close_template #ueber button "schliessen" siehe kommentar "start_calculation"
     @xlapp.ActiveWorkbook.Close
   end
 
-  def excel_beenden
+  def quit_excel
     @excel_controller.quit_excel
   end
 
 end
 
+#@todo: berechnetes box (groesser als 0 etc)
+#@todo: code refactoring bsp: tastensenden vor if
+#@todo: strg pagedown fuer registerknatureen wechseln
+#@todo: excel_leser anbindung

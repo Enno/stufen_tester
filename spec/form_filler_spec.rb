@@ -11,42 +11,42 @@ describe FormFiller do
     mappen_pfad = File.dirname(File.dirname(__FILE__)) +  "/daten/"
     start_proc_name = "Entgeltumwandlungsrechner_starten"
     @ff = FormFiller.new(mappen_pfad, mappen_name, start_proc_name)
-    2.times { @ff.tasten_senden("%{F11}") } # Workaround für nicht funktionierende Tab-Tasten
+    2.times { @ff.send_keys("%{F11}") } # Workaround für nicht funktionierende Tab-Tasten
   end
 
   after(:each) do
-    @ff.maske_schliessen
-    @ff.excel_beenden
+    @ff.close_template
+    @ff.quit_excel
   end
 #
 #  it "sollte Namen korrekt eintragen" do
 #    zeile = {:name => "Max Peter", :bruttogehalt => 2000, :k_vers_art => "p",
 #      :steuerklasse => "III", :bland_arbeit => "Berlin-West"}
-#    @ff.maske_fuellen(zeile)
-#    @ff.vb_senden("Abfrage_Feld_name").should == "Max Peter"
+#    @ff.populate_template(zeile)
+#    @ff.vb_send("Abfrage_Feld_name").should == "Max Peter"
 #  end
 #
 #  it "sollte Kinderfreibetrag korrekt eintragen" do
-#    @ff.maske_fuellen(:bruttogehalt => 2000,
+#    @ff.populate_template(:bruttogehalt => 2000,
 #      :k_vers_art => "g",
 #      :kinder_fb => 2,
 #      #:kinderlos => "j",
 #      :verzicht_betrag => 30,
 #      :verzicht_als_netto => "brutto")
-#    @ff.vb_senden("Abfrage_Feld_kinderfreibetraege").should == 2
+#    @ff.vb_send("Abfrage_Feld_kinderfreibetraege").should == 2
 #  end
 #
 #  it "sollte Verzichts-Betrag korrekt eintragen" do
 #    betrag = 43
-#    @ff.maske_fuellen(:verzicht_als_netto => "brutto",
+#    @ff.populate_template(:verzicht_als_netto => "brutto",
 #      :verzicht_betrag => betrag,
 #      :bruttogehalt => 2000,
 #      :ag_zuschuss => 20,
 #      :ag_zuschuss_als_absolut => "€")
-#    @ff.vb_senden("Abfrage_Feld_nvz_betrag").should == 43
-##    @ff.vb_senden("Abfrage_Feld_AG_Zuschuss").should == true
-##    @ff.vb_senden("Abfrage_Feld_ag_prozent").should == false
-##    @ff.vb_senden("Abfrage_Feld_AG_Beitrag").should == 20
+#    @ff.vb_send("Abfrage_Feld_nvz_betrag").should == 43
+##    @ff.vb_send("Abfrage_Feld_AG_Zuschuss").should == true
+##    @ff.vb_send("Abfrage_Feld_ag_prozent").should == false
+##    @ff.vb_send("Abfrage_Feld_AG_Beitrag").should == 20
 #  end
 #
 #  it "sollte Kommazahlen korekt eintragen" do
@@ -55,14 +55,14 @@ describe FormFiller do
 #    zeile = {:name => "Max Peter", :bruttogehalt => brutto_betrag,
 #             :kinder_fb => kfb
 #    }
-#    @ff.maske_fuellen(zeile)
-#    @ff.vb_senden("Abfrage_Feld_gehalt").should == brutto_betrag
-#    @ff.vb_senden("Abfrage_Feld_kinderfreibetraege").should == kfb
+#    @ff.populate_template(zeile)
+#    @ff.vb_send("Abfrage_Feld_gehalt").should == brutto_betrag
+#    @ff.vb_send("Abfrage_Feld_kinderfreibetraege").should == kfb
 #  end
 #
 #  it "sollte MinijobOK korrekt eintragen" do
-#    @ff.maske_fuellen(:minijob_ok => true, :bruttogehalt => 2000)
-#    @ff.vb_senden("Abfrage_Feld_Minijob").should == true
+#    @ff.populate_template(:minijob_ok => true, :bruttogehalt => 2000)
+#    @ff.vb_send("Abfrage_Feld_Minijob").should == true
 #  end
 #
   it "sollte für vollen Datensatz funktionieren" do
@@ -83,7 +83,7 @@ describe FormFiller do
       :ag_zuschuss_ok => true,
       :ag_zuschuss => 20
     }
-    @ff.maske_fuellen datensatz
+    @ff.populate_template datensatz
     keys_zu_stufenrechner_namen = {
       :name => "name",
       :bruttogehalt=>"gehalt",
@@ -121,7 +121,7 @@ describe FormFiller do
     #"pv_pflicht"
        }
     keys_zu_stufenrechner_namen.each do |key, sr_name|
-      [key, @ff.vb_senden("Abfrage_Feld_#{sr_name}")].should == [key, datensatz[key]]
+      [key, @ff.vb_send("Abfrage_Feld_#{sr_name}")].should == [key, datensatz[key]]
     end
     puts "#{keys_zu_stufenrechner_namen.size} felder getestet"
 
