@@ -38,7 +38,7 @@ class FormFiller
 
   def feld_vor(anzahl)
     zu_sendende_tabs = "{TAB}" * anzahl
-    tasten_senden("#{zu_sendende_tabs}", :wartezeit => 0.01 )
+    tasten_senden("#{zu_sendende_tabs}", :wartezeit => 0.3 )
   end
 
   def feld_zurueck(anzahl)
@@ -77,15 +77,15 @@ class FormFiller
         {:verzicht_als_netto => ["netto", "brutto"]}
       ]},
     {:felder_blatt3 => [
-      :vl_arbeitgeber,
-      :ueberweisungvl_keine_ahnung_welches_feld,
-      {:vl_als_beitrag => true}
-    ]},
+        :vl_arbeitgeber,
+        :ueberweisungvl_keine_ahnung_welches_feld,
+        {:vl_als_beitrag => true}
+      ]},
     {:felder_blatt4 => [
-      {:ag_zuschuss_ok_weiss_noch_nicht_wie_umsetzen_abhaengig_von_ag_zuschuss => false},
-      {:ag_zuschuss_als_absolut => ["€", "%"]},
-      :ag_zuschuss
-    ]}
+        {:ag_zuschuss_ok => :ag_zuschuss},
+        {:ag_zuschuss_als_absolut => ["€", "%"]},
+        :ag_zuschuss
+      ]}
   ]
 
   def wert_eintragen_fuer(datensatz, symbol_oder_hash)
@@ -105,9 +105,21 @@ class FormFiller
       einzutragender_wert.is_a?(Float) ? tasten_senden(dezimalzahl_fuer_office_umwandeln(einzutragender_wert)) : tasten_senden(einzutragender_wert)
       feld_vor(1)
     when :checkbox
-      vorbelegung = rechte_seite
-      tasten_senden(' ') if vorbelegung ^ einzutragender_wert # exclusive or
-      feld_vor(1)
+      if rechte_seite.is_a?(Symbol) 
+          vorbelegung = false
+        if (datensatz[rechte_seite] == 0) || (datensatz[rechte_seite] == nil) then
+          einzutragender_wert = false
+          tasten_senden(' ') if vorbelegung ^ einzutragender_wert # exclusive or
+          feld_vor(1)
+        else
+          einzutragender_wert = true
+          tasten_senden(' ') if vorbelegung ^ einzutragender_wert # exclusive or
+          feld_zurueck(2)
+        end
+      else
+        vorbelegung = rechte_seite
+        feld_vor(1)
+      end
     when :radio_group
       auswahl_liste = rechte_seite
       auswahl_liste.each do |moegl_wert|
