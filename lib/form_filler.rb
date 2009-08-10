@@ -61,19 +61,19 @@ class FormFiller
   @@register_karten = [
     {:felder_blatt1 => [
         :name,
-        :bruttogehalt
-        #        :freibetrag,
-        #        {:k_vers_art => ["g","p"]},
-        #        :steuerklasse,
-        #        :kinder_fb,
-        #        {:kirchensteuer => true},
-        #        :bland_wohnsitz,
-        #        :bland_arbeit,
-        #        :berufsgruppe,
-        #        :durchfuehrungsweg,
-        #        {:pausch_steuer40b => false},
-        #        {:minijob_ok => false},
-        #        {:kinderlos => false},
+        :bruttogehalt,
+        :freibetrag,
+        {:k_vers_art => ["g","p"]},
+        :steuerklasse,
+        :kinder_fb,
+        {:kirchensteuer => true},
+        :bland_wohnsitz,
+        :bland_arbeit,
+        :berufsgruppe,
+        :durchfuehrungsweg,
+        {:pausch_steuer40b => false},
+        {:minijob_ok => false},
+        {:kinderlos => false},
       ],
       #:automatisch_auf_naechstem_feld => false,
       #:rueckwaerts_eintragen => false
@@ -89,6 +89,7 @@ class FormFiller
     {:felder_blatt3 => [
         :vl_arbeitgeber,
         {:vl_gesamt => {
+            :art => :direkt,
             :funktion => SUMMIEREN,
             :params => [:vl_arbeitgeber, :vl_arbeitnehmer],
           }},
@@ -130,7 +131,7 @@ class FormFiller
       is_complex = rechte_seite.is_a?(Hash)
       art = case rechte_seite
       when Array     then :radio_group
-      when [true, false]      then :checkbox
+      when true, false      then :checkbox
         #when false     then :checkbox
       when Hash      then rechte_seite[:art]
       end
@@ -139,7 +140,13 @@ class FormFiller
 
     return  if @inaktive_felder.include? sym
 
-    einzutragender_wert = datensatz[sym]
+    einzutragender_wert = if is_complex and rechte_seite[:funktion]
+      param_werte = rechte_seite[:params].map {|symbol| datensatz[symbol] }
+      funktion = rechte_seite[:funktion]
+      funktion[*param_werte]
+    else
+      datensatz[sym]
+    end
 
     # Vor-Verarbeitung
     
