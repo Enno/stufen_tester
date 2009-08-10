@@ -22,6 +22,8 @@ class FormFiller
     @feld_kinderlos_aktiv = true
     @feld_pauschalverst_aktiv = true
     @feld_minijob_aktiv = true
+    @automatisch_auf_naechstem_feld = false
+    @rueckwaerts_in_die_zellen_eintragen = false
     case @xlapp.version
     when "12.0"
       @fenstername = 'Microsoft Excel' #fuer office 07 anwendungen
@@ -38,7 +40,7 @@ class FormFiller
 
   def feld_vor(anzahl)
     zu_sendende_tabs = "{TAB}" * anzahl
-    tasten_senden("#{zu_sendende_tabs}", :wartezeit => 0.01 )
+    tasten_senden("#{zu_sendende_tabs}", :wartezeit => 0.5)
   end
 
   def feld_zurueck(anzahl)
@@ -70,22 +72,34 @@ class FormFiller
         {:pausch_steuer40b => false},
         {:minijob_ok => false},
         {:kinderlos => false},
-      ]},
+      ],
+      :automatisch_auf_naechstem_feld => false,
+      :rueckwaerts_eintragen => false
+    },
     {:felder_blatt2 => [
         {:umwandlgvon_keine_ahnung_welches_feld => false},
         :verzicht_betrag,
         {:verzicht_als_netto => ["netto", "brutto"]}
-      ]},
+      ],
+      :automatisch_auf_naechstem_feld => false,
+      :rueckwaerts_eintragen => false
+    },
     {:felder_blatt3 => [
-      :vl_arbeitgeber,
-      :ueberweisungvl_keine_ahnung_welches_feld,
-      {:vl_als_beitrag => true}
-    ]},
+        :vl_arbeitgeber,
+        :ueberweisungvl_keine_ahnung_welches_feld,
+        {:vl_als_beitrag => true}
+      ],
+      :automatisch_auf_naechstem_feld => false,
+      :rueckwaerts_eintragen => false
+    },
     {:felder_blatt4 => [
-      {:ag_zuschuss_ok_weiss_noch_nicht_wie_umsetzen_abhaengig_von_ag_zuschuss => false},
-      #{:ag_zuschuss_als_absolut => ["€", "%"]},
-      #:ag_zuschuss
-    ]}
+        {:ag_zuschuss_ok => :ag_zuschuss},        
+        :ag_zuschuss,
+        {:ag_zuschuss_als_absolut => ["%", "€"]}
+      ],
+      :automatisch_auf_naechstem_feld => true,
+      :rueckwaerts_eintragen => true
+    }
   ]
 
   def wert_eintragen_fuer(datensatz, symbol_oder_hash)
@@ -103,16 +117,31 @@ class FormFiller
     case art
     when :direkt
       einzutragender_wert.is_a?(Float) ? tasten_senden(dezimalzahl_fuer_office_umwandeln(einzutragender_wert)) : tasten_senden(einzutragender_wert)
-      feld_vor(1)
+      @rueckwaerts_in_die_zellen_eintragen ? feld_zurueck(1) : feld_vor(1)
     when :checkbox
-      vorbelegung = rechte_seite
+      if rechte_seite.is_a?(Symbol)
+        vorbelegung = false
+        if ((datensatz[rechte_seite] == 0) || (datensatz[rechte_seite] == nil)) then
+          einzutragender_wert = false
+          puts "bin hier"
+          puts vorbelegung, einzutragender_wert
+          @automatisch_auf_naechstem_feld = false
+        else
+          einzutragender_wert = true
+          @automatisch_auf_naechstem_feld = true
+        end
+      else
+        vorbelegung = rechte_seite
+      end
       tasten_senden(' ') if vorbelegung ^ einzutragender_wert # exclusive or
-      feld_vor(1)
+      if @automatisch_auf_naechstem_feld == false
+        @rueckwaerts_in_die_zellen_eintragen ? feld_zurueck(1) : feld_vor(1)
+      end
     when :radio_group
       auswahl_liste = rechte_seite
       auswahl_liste.each do |moegl_wert|
         tasten_senden(' ') if moegl_wert == einzutragender_wert
-        feld_vor(1)
+        @rueckwaerts_in_die_zellen_eintragen ? feld_zurueck(1) : feld_vor(1)
       end
     end
   end
@@ -127,6 +156,8 @@ class FormFiller
     @@register_karten.each do |karten_beschreibung|
       felder_des_aktuellen_blattes = "felder_blatt#{register_karten_index}".to_sym
       felder_in_karte = karten_beschreibung[felder_des_aktuellen_blattes]
+      @automatisch_auf_naechstem_feld = karten_beschreibung[:automatisch_auf_naechstem_feld]
+      @rueckwaerts_in_die_zellen_eintragen = karten_beschreibung[:rueckwaerts_eintragen]
       felder_in_karte.each do |feld_info|
         wert_eintragen_fuer(datensatz, feld_info)
       end
