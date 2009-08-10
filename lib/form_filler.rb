@@ -17,7 +17,7 @@ class FormFiller
     @excel_controller = ExcelController.new(path + file_name)
     @excel_controller.open_excel_file(path + file_name)
     @xlapp = @excel_controller.excel_appl
-    @template_controller = TastenSender.new(:wnatureezeit => 0.2)
+    @template_controller = TastenSender.new(:wartezeit => 0.2)
  
     case @xlapp.version
     when "12.0"
@@ -30,7 +30,7 @@ class FormFiller
   end
 
   def open_template
-    @template_controller.sende_tasten(@window_name, "%{F8}#{@proc_name}%{a}", :wnatureezeit => 0.2, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
+    @template_controller.sende_tasten(@window_name, "%{F8}#{@proc_name}%{a}", :wartezeit => 0.2, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
     sleep(@access_to_macro)
   end
 
@@ -38,11 +38,11 @@ class FormFiller
     return unless numbers
     shift_code = numbers < 0 ? "+" : ""
     send_tabs = "#{shift_code}{TAB}" * numbers.abs
-    send_keys("#{send_tabs}", :wnatureezeit => 0.02)
+    send_keys("#{send_tabs}", :wartezeit => 0.01)
   end
 
   def confirm_input
-    send_keys("{ENTER}", :wnatureezeit => 0.2)
+    send_keys("{ENTER}", :wartezeit => 0.2)
   end
 
   def send_keys(character, options = {})
@@ -125,47 +125,47 @@ class FormFiller
 
   # Vor-Verarbeitung
   def preparing_value(nature, right_side, continue_processing_data)
-    default_value = if right_side.is_a?(Hash) then
-      skip_adjustment = right_side[:skip_adjustment]
-      select_list = right_side[:select_list]
+    @default_value = if right_side.is_a?(Hash) then
+      @skip_adjustment = right_side[:skip_adjustment]
+      @select_list = right_side[:select_list]
 
       non_busy_boxes_new = (continue_processing_data ? [] : right_side[:activates])
       @non_busy_boxes += non_busy_boxes_new if non_busy_boxes_new
 
       right_side[:default_value]
     else
-      skip_adjustment = 0
+      @skip_adjustment = 0
       case nature
       when :checkbox
         right_side
       when :radio_group
-        select_list = right_side
+        @select_list = right_side
         nil
       end
     end
-    enter_value(continue_processing_data, nature, default_value, skip_adjustment, select_list)
+    enter_value(continue_processing_data, nature)
   end
 
-  def enter_value(continue_processing_data, nature, default_value, skip_adjustment, select_list)
+  def enter_value(continue_processing_data, nature)
     case nature
     when :direkt
       send_keys(continue_processing_data.is_a?(Float) ?
           (change_decimal_seperation(continue_processing_data)) : (continue_processing_data))
       tab_set
     when :checkbox
-      send_keys(' ') if default_value ^ continue_processing_data # exclusive or
+      send_keys(' ') if @default_value ^ continue_processing_data # exclusive or
       tab_set
     when :radio_group
-      change = (continue_processing_data != default_value)
-      select_list.each do |feasible_value|
+      change = (continue_processing_data != @default_value)
+      @select_list.each do |feasible_value|
         if change and feasible_value == continue_processing_data then
           send_keys(' ')
-          break if skip_adjustment
+          break if @skip_adjustment
         end
         tab_set
       end
     end
-    tab_set( skip_adjustment )
+    tab_set( @skip_adjustment )
   end
 
   def change_decimal_seperation(continue_processing_data)
