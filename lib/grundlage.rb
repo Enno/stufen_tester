@@ -34,6 +34,7 @@ SPALTEN_UEBERSCHRIFTEN = {
   :verzicht_betrag  => /Netto-\/\s*Bruttoverzicht/,
   :vl_arbeitgeber   => /Arbeitgeber-\santeil VL/,
   :vl_arbeitnehmer  => /Arbeitnehmer-\santeil VL/,
+  :vl_gesamt        => nil,
   :bland_wohnsitz   => /Bundesland \sWohnsitz/,
   :bland_arbeit     => /Bundesland\sArbeitsstätte/,
   :berufsgruppe     => /Berufsgruppe/,

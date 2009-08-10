@@ -57,7 +57,7 @@ describe ExcelLeser do
     nf[:minijob_ok].should                    == false
     nf[:durchfuehrungsweg].should             == "Direktversicherung"
     nf[:verzicht_als_netto].should            == "netto"
-    nf[:vl_als_beitrag].should                == "ja"
+    nf[:vl_als_beitrag].should                == true
     nf[:ag_zuschuss].should                   == 10
     nf[:ag_zuschuss_als_absolut].should       == "%"
   end

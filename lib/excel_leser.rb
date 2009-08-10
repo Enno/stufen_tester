@@ -37,21 +37,23 @@ class ExcelLeser #< ExcelController
     blatt_ueberschriften = zeile_als_array(19)
     aktuelle_zeile = zeile_als_array(zeilen_nummer)
     SPALTEN_UEBERSCHRIFTEN.each do |ueberschrift_bezeichnung, ueberschrift_vorgegeben|
-      spalten_nr = blatt_ueberschriften.each_with_index do |ueberschrift_aus_blatt, index|
-        break nil if ueberschrift_aus_blatt.nil?
-        regex_neu = Regexp.new(ueberschrift_vorgegeben.source, Regexp::MULTILINE | Regexp::IGNORECASE )
-        break index if ueberschrift_aus_blatt.gsub(/[)(]/,"") =~ regex_neu
+      catch :ueberspringen do
+        spalten_nr = blatt_ueberschriften.each_with_index do |ueberschrift_aus_blatt, index|
+          break nil if ueberschrift_aus_blatt.nil?
+          throw :ueberspringen if ueberschrift_vorgegeben.nil?
+          regex_neu = Regexp.new(ueberschrift_vorgegeben.source, Regexp::MULTILINE | Regexp::IGNORECASE )
+          break index if ueberschrift_aus_blatt.gsub(/[)(]/,"") =~ regex_neu
+        end
+        if spalten_nr.is_a? Integer
+          erg[ueberschrift_bezeichnung] = aktuelle_zeile[spalten_nr]
+        else
+          raise "Überschrift '#{ueberschrift_vorgegeben}' (für #{ueberschrift_bezeichnung}) nicht gefunden."
+        end
       end
-      #aktuelle_zelle = @xlapp.WorkSheets(@tabelle_name).Cells(1,1).Find(value)
-      if spalten_nr.is_a? Integer
-        erg[ueberschrift_bezeichnung] = aktuelle_zeile[spalten_nr]
-      else
-        raise "Überschrift '#{ueberschrift_vorgegeben}' (für #{ueberschrift_bezeichnung}) nicht gefunden."
-      end
-      GLOBALBLATT_NAMEN.each do |namenfeld_bezeichnung, namenfeld_vorgegeben|
-        aktuelles_namenfeld = namenfeld_wert(namenfeld_vorgegeben)
-        erg[namenfeld_bezeichnung] = aktuelles_namenfeld
-      end
+    end
+    GLOBALBLATT_NAMEN.each do |namenfeld_bezeichnung, namenfeld_vorgegeben|
+      aktuelles_namenfeld = namenfeld_wert(namenfeld_vorgegeben)
+      erg[namenfeld_bezeichnung] = aktuelles_namenfeld
     end
     EXCEL_EINLESE_TRANSFORMATIONEN.each do |key, trafo_hash|
       alter_wert = erg[key]
