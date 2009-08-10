@@ -57,22 +57,23 @@ class FormFiller
     @masken_controller.sende_tasten(@fenstername, "#{zeichen}", optionen)
   end
 
+  SUMMIEREN = proc {|a, b| a + b}
   @@register_karten = [
     {:felder_blatt1 => [
         :name,
         :bruttogehalt
-#        :freibetrag,
-#        {:k_vers_art => ["g","p"]},
-#        :steuerklasse,
-#        :kinder_fb,
-#        {:kirchensteuer => true},
-#        :bland_wohnsitz,
-#        :bland_arbeit,
-#        :berufsgruppe,
-#        :durchfuehrungsweg,
-#        {:pausch_steuer40b => false},
-#        {:minijob_ok => false},
-#        {:kinderlos => false},
+        #        :freibetrag,
+        #        {:k_vers_art => ["g","p"]},
+        #        :steuerklasse,
+        #        :kinder_fb,
+        #        {:kirchensteuer => true},
+        #        :bland_wohnsitz,
+        #        :bland_arbeit,
+        #        :berufsgruppe,
+        #        :durchfuehrungsweg,
+        #        {:pausch_steuer40b => false},
+        #        {:minijob_ok => false},
+        #        {:kinderlos => false},
       ],
       #:automatisch_auf_naechstem_feld => false,
       #:rueckwaerts_eintragen => false
@@ -87,7 +88,10 @@ class FormFiller
     },
     {:felder_blatt3 => [
         :vl_arbeitgeber,
-        :ueberweisungvl_keine_ahnung_welches_feld,
+        {:vl_gesamt => {
+            :funktion => SUMMIEREN,
+            :params => [:vl_arbeitgeber, :vl_arbeitnehmer],
+          }},
         {:vl_als_beitrag => true}
       ]
       #      :automatisch_auf_naechstem_feld => false,
@@ -99,18 +103,18 @@ class FormFiller
             :vorbelegung  => false,
             :sprung_korrektur => -3,
             :macht_aktiv => [:ag_zuschuss, :ag_zuschuss_als_absolut]
-        }},
+          }},
         {:ag_zuschuss_als_absolut => {
             :art => :radio_group,
             :auswahl_liste => ["€", "%"],
             :vorbelegung  => "€",
             :sprung_korrektur => 0
-        }},
+          }},
         :ag_zuschuss
       ],
 
-#      :sprung_korrektur => {:ag_zuschuss_ok => -2},
-#      :macht_aktiv => {:ag_zuschuss_ok => [:ag_zuschuss, {:bedingung => proc{|wert| wert == "k"}}]}
+      #      :sprung_korrektur => {:ag_zuschuss_ok => -2},
+      #      :macht_aktiv => {:ag_zuschuss_ok => [:ag_zuschuss, {:bedingung => proc{|wert| wert == "k"}}]}
       #:automatisch_auf_naechstem_feld => true,
       #:rueckwaerts_eintragen => true
     }
@@ -123,11 +127,12 @@ class FormFiller
       sym = symbol_oder_hash
     when Hash
       rechte_seite = symbol_oder_hash.values.first
+      is_complex = rechte_seite.is_a?(Hash)
       art = case rechte_seite
       when Array     then :radio_group
-      when true, false      then :checkbox
-      #when false     then :checkbox
-      when Hash      then :complex
+      when [true, false]      then :checkbox
+        #when false     then :checkbox
+      when Hash      then rechte_seite[:art]
       end
       sym = symbol_oder_hash.keys.first
     end
@@ -137,23 +142,24 @@ class FormFiller
     einzutragender_wert = datensatz[sym]
 
     # Vor-Verarbeitung
-    sprung_korrektur = nil
-    vorbelegung = case art
-    when :checkbox
-      rechte_seite
-    when :radio_group
-      auswahl_liste = rechte_seite
-      nil
-    when :complex
-      art = rechte_seite[:art]
+    
+    vorbelegung = if is_complex then
+      sprung_korrektur = rechte_seite[:sprung_korrektur]
       auswahl_liste = rechte_seite[:auswahl_liste]
 
       neue_inaktive = (einzutragender_wert ? [] : rechte_seite[:macht_aktiv])
       @inaktive_felder += neue_inaktive if neue_inaktive
 
-      sprung_korrektur = rechte_seite[:sprung_korrektur]
-
       rechte_seite[:vorbelegung]
+    else
+      sprung_korrektur = nil
+      case art
+      when :checkbox
+        rechte_seite
+      when :radio_group
+        auswahl_liste = rechte_seite
+        nil
+      end
     end
 
     case art
