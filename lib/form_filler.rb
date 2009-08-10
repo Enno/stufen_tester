@@ -39,9 +39,10 @@ class FormFiller
   end
 
   def feld_vor(anzahl = 1)
+    return unless anzahl
     shift_code = anzahl < 0 ? "+" : ""
     zu_sendende_tabs = "#{shift_code}{TAB}" * anzahl.abs
-    tasten_senden("#{zu_sendende_tabs}", :wartezeit => 0.702)
+    tasten_senden("#{zu_sendende_tabs}", :wartezeit => 0.02)
   end
 
   def feld_zurueck(anzahl)
@@ -93,13 +94,21 @@ class FormFiller
       #      :rueckwaerts_eintragen => false
     },
     {:felder_blatt4 => [
-        {:ag_zuschuss_ok => {:vorbelegung  => false, 
-            :sprung_korrektur => -2,
-            :macht_aktiv => [:ag_zuschuss, :ag_zuschuss_als_absolut]}
-        },
-        {:ag_zuschuss_als_absolut => ["€", "%"]},
+        {:ag_zuschuss_ok => {
+            :art => :checkbox,
+            :vorbelegung  => false,
+            :sprung_korrektur => -3,
+            :macht_aktiv => [:ag_zuschuss, :ag_zuschuss_als_absolut]
+        }},
+        {:ag_zuschuss_als_absolut => {
+            :art => :radio_group,
+            :auswahl_liste => ["€", "%"],
+            :vorbelegung  => "€",
+            :sprung_korrektur => 0
+        }},
         :ag_zuschuss
       ],
+
 #      :sprung_korrektur => {:ag_zuschuss_ok => -2},
 #      :macht_aktiv => {:ag_zuschuss_ok => [:ag_zuschuss, {:bedingung => proc{|wert| wert == "k"}}]}
       #:automatisch_auf_naechstem_feld => true,
@@ -116,9 +125,9 @@ class FormFiller
       rechte_seite = symbol_oder_hash.values.first
       art = case rechte_seite
       when Array     then :radio_group
-      when true      then :checkbox
-      when false     then :checkbox
-      when Hash      then :komplex
+      when true, false      then :checkbox
+      #when false     then :checkbox
+      when Hash      then :complex
       end
       sym = symbol_oder_hash.keys.first
     end
@@ -126,47 +135,50 @@ class FormFiller
     return  if @inaktive_felder.include? sym
 
     einzutragender_wert = datensatz[sym]
+
+    # Vor-Verarbeitung
+    sprung_korrektur = nil
+    vorbelegung = case art
+    when :checkbox
+      rechte_seite
+    when :radio_group
+      auswahl_liste = rechte_seite
+      nil
+    when :complex
+      art = rechte_seite[:art]
+      auswahl_liste = rechte_seite[:auswahl_liste]
+
+      neue_inaktive = (einzutragender_wert ? [] : rechte_seite[:macht_aktiv])
+      @inaktive_felder += neue_inaktive if neue_inaktive
+
+      sprung_korrektur = rechte_seite[:sprung_korrektur]
+
+      rechte_seite[:vorbelegung]
+    end
+
     case art
     when :direkt
       einzutragender_wert.is_a?(Float) ? tasten_senden(dezimalzahl_fuer_office_umwandeln(einzutragender_wert)) : tasten_senden(einzutragender_wert)
       feld_vor
       #@rueckwaerts_in_die_zellen_eintragen ? feld_zurueck(1) : feld_vor(1)
     when :checkbox
-      #      if rechte_seite.is_a?(Symbol)
-      #        vorbelegung = false
-      #        if ((datensatz[rechte_seite] == 0) || (datensatz[rechte_seite] == nil)) then
-      #          einzutragender_wert = false
-      #          puts "bin hier"
-      #          puts vorbelegung, einzutragender_wert
-      #          @automatisch_auf_naechstem_feld = false
-      #        else
-      #          einzutragender_wert = true
-      #          @automatisch_auf_naechstem_feld = true
-      #        end
-      #      else
-      #        vorbelegung = rechte_seite
-      #      end
-      vorbelegung = rechte_seite
       tasten_senden(' ') if vorbelegung ^ einzutragender_wert # exclusive or
       feld_vor 
-      #      if @automatisch_auf_naechstem_feld == false
-      #        @rueckwaerts_in_die_zellen_eintragen ? feld_zurueck(1) : feld_vor(1)
-      #      end
-    when :komplex
-      vorbelegung = rechte_seite[:vorbelegung]
-      tasten_senden(' ') if vorbelegung ^ einzutragender_wert # exclusive or
-      feld_vor( rechte_seite[:sprung_korrektur] ?  rechte_seite[:sprung_korrektur] : 1)
-      neue_inaktive = (einzutragender_wert ? [] : rechte_seite[:macht_aktiv])
-      #neue_inaktive = (rechte_seite[:macht_aktiv] if einzutragender_wert)
-      @inaktive_felder += neue_inaktive if neue_inaktive
     when :radio_group
-      auswahl_liste = rechte_seite
+      aendern = (einzutragender_wert != vorbelegung)
+      #puts "ziel: #{einzutragender_wert} #{auswahl_liste.inspect}"
       auswahl_liste.each do |moegl_wert|
-        tasten_senden(' ') if moegl_wert == einzutragender_wert
+        #puts moegl_wert
+        if aendern and moegl_wert == einzutragender_wert then
+          tasten_senden(' ')
+          break if sprung_korrektur
+        end
         feld_vor
         #@rueckwaerts_in_die_zellen_eintragen ? feld_zurueck(1) : feld_vor(1)
       end
     end
+    
+    feld_vor( sprung_korrektur ) 
   end
 
   def dezimalzahl_fuer_office_umwandeln(einzutragender_wert)
