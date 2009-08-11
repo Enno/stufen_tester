@@ -49,136 +49,172 @@ class FormFiller
     @template_controller.sende_tasten(@fenstername, "#{character}", options)
   end
 
-  SUM = proc {|a, b| a + b}
+  SUM               = proc {|a, b| a + b}
+  GREATER_THEN_ZERO = proc {|a| a > 0}
+
   @@records = [
     [
       :name,
       :bruttogehalt,
       :freibetrag,
-      {:k_vers_nature => ["g","p"]},
+      {:k_vers_art => {
+          :nature           => :radio_group,
+          :select_list      => ["g", "p"],
+          :default_value    => "g",
+          :deactivates      => [:kinderlos]
+        }},
       :steuerklasse,
       :kinder_fb,
-      {:kirchensteuer => true},
+      {:kirchensteuer       => true},
       :bland_wohnsitz,
       :bland_arbeit,
       :berufsgruppe,
       :durchfuehrungsweg,
-      {:pausch_steuer40b => false},
-      {:minijob_ok => false},
-      {:kinderlos => false},
+      {:pausch_steuer40b    => false},
+      {:minijob_ok          => false},
+      {:kinderlos           => false},
     ],[
-      {:umwandlgvon_keine_ahnung_welches_box => false},
+      {:nvz => {
+          :nature           => :checkbox,
+          :default_value    => true,
+          :deactivates      => [:verzicht_betrag, :verzicht_als_netto],
+          :function         => GREATER_THEN_ZERO,
+          :params           => [:verzicht_betrag]
+        }},
       :verzicht_betrag,
-      {:verzicht_als_netto => ["netto", "brutto"]}
+      {:verzicht_als_netto  => {
+          :nature           => :radio_group,
+          :select_list      => [true, false], #["netto", "brutto"]
+          :default_value    => true
+      }},
     ],[
       :vl_arbeitgeber,
       {:vl_gesamt => {
-          :nature => :direkt,
-          :function => SUM,
-          :params => [:vl_arbeitgeber, :vl_arbeitnehmer],
+          :nature           => :direkt,
+          :function         => SUM,
+          :params           => [:vl_arbeitgeber, :vl_arbeitnehmer],
         }},
-      {:vl_als_beitrag => true}
+      {:vl_als_beitrag      => true}
     ],[
       {:ag_zuschuss_ok => {
-          :nature => :checkbox,
-          :default_value => false,
-          :skip_adjustment => -3,
-          :activates => [:ag_zuschuss, :ag_zuschuss_als_absolut]
+          :nature           => :checkbox,
+          :default_value    => false,
+          :skip_adjustment  => -3,
+          :activates        => [:ag_zuschuss, :ag_zuschuss_als_absolut],
+          :function         => GREATER_THEN_ZERO,
+          :params           => [:ag_zuschuss]
+
         }},
       {:ag_zuschuss_als_absolut => {
-          :nature => :radio_group,
-          :select_list => ["€", "%"],
-          :default_value => "€",
-          :skip_adjustment => 0
+          :nature           => :radio_group,
+          :select_list      => [true, false], # ["€", "%"],
+          :default_value    => true,          # "€",
+          :skip_adjustment  => 0
         }},
       :ag_zuschuss
     ]
   ]
 
-  def identify_value(datset, symbol_or_hash)
+  def identify_nature(dataset, symbol_or_hash)
     case symbol_or_hash
     when Symbol
-      nature = :direkt
-      sym = symbol_or_hash
+      @nature              = :direkt
+      @actual_box_name     = symbol_or_hash
     when Hash
-      right_side = symbol_or_hash.values.first
-      is_complex = right_side.is_a?(Hash)
-      nature = case right_side
+      @right_side = symbol_or_hash.values.first
+      is_complex  = @right_side.is_a?(Hash)
+      @nature     = case @right_side
       when Array            then :radio_group
       when true, false      then :checkbox
-      when Hash             then right_side[:nature]
+      when Hash             then @right_side[:nature]
       end
-      sym = symbol_or_hash.keys.first
-    end
-
-    return  if @non_busy_boxes.include? sym
-
-    continue_processing_data = if is_complex and right_side[:function]
-      param_values = right_side[:params].map {|symbol| datset[symbol] }
-      function = right_side[:function]
-      function[*param_values]
-    else
-      datset[sym]
-    end
-    preparing_value(nature, right_side, continue_processing_data)
+      @actual_box_name    = symbol_or_hash.keys.first
+    end    
+    select_processing_data(dataset, is_complex)
   end
 
-  # Vor-Verarbeitung
-  def preparing_value(nature, right_side, continue_processing_data)
-    @default_value = if right_side.is_a?(Hash) then
-      @skip_adjustment = right_side[:skip_adjustment]
-      @select_list = right_side[:select_list]
-
-      non_busy_boxes_new = (continue_processing_data ? [] : right_side[:activates])
-      @non_busy_boxes += non_busy_boxes_new if non_busy_boxes_new
-
-      right_side[:default_value]
+  def select_processing_data(dataset, is_complex)
+    @continue_processing_data = if is_complex and @right_side[:function]
+      param_values  = @right_side[:params].map {|symbol| dataset[symbol] }
+      function      = @right_side[:function]
+      function[*param_values]
     else
-      @skip_adjustment = 0
-      case nature
+      dataset[@actual_box_name]
+    end
+    check_variables_environment(is_complex)
+  end
+
+  def check_variables_environment(is_complex)
+    if is_complex then
+      skip_adjustment     = @right_side[:skip_adjustment]
+      select_list         = @right_side[:select_list]
+      default_value       = @right_side[:default_value]
+      
+      non_busy_boxes_new = (@continue_processing_data != default_value ?
+          @right_side[:deactivates] :
+          @right_side[:activates])
+      @non_busy_boxes     += non_busy_boxes_new if non_busy_boxes_new
+
+    else
+      skip_adjustment     = 0
+      case @nature
       when :checkbox
-        right_side
+        select_list       = nil
+        default_value     = @right_side
       when :radio_group
-        @select_list = right_side
+        select_list       = @right_side
+        default_value     = nil
         nil
       end
     end
-    enter_value(continue_processing_data, nature)
+    return @processing_data_attributes = {
+      "actual_box_name" => @actual_box_name,
+      "nature"          => @nature,
+      "select_list"     => select_list,
+      "default_value"   => default_value,
+      "skip_adjustment" => skip_adjustment,
+      "non_busy_boxes"  => @non_busy_boxes}
   end
 
-  def enter_value(continue_processing_data, nature)
-    case nature
+  def enter_value(dataset, box_info)
+
+    identify_nature(dataset, box_info)
+
+    return if @processing_data_attributes["non_busy_boxes"].include? @processing_data_attributes["actual_box_name"]
+
+    case @processing_data_attributes["nature"]
     when :direkt
-      send_keys(continue_processing_data.is_a?(Float) ?
-          (change_decimal_seperation(continue_processing_data)) : (continue_processing_data))
+      send_keys(@continue_processing_data.is_a?(Float) ?
+          (change_decimal_seperation(@continue_processing_data)) : (@continue_processing_data))
       tab_set
     when :checkbox
-      send_keys(' ') if @default_value ^ continue_processing_data # exclusive or
+      send_keys(' ') if @processing_data_attributes["default_value"] ^ @continue_processing_data # exclusive or
       tab_set
     when :radio_group
-      change = (continue_processing_data != @default_value)
-      @select_list.each do |feasible_value|
-        if change and feasible_value == continue_processing_data then
+      change = (@continue_processing_data != @processing_data_attributes["default_value"])
+      @processing_data_attributes["select_list"].each do |feasible_value|
+        if change and feasible_value == @continue_processing_data then
           send_keys(' ')
-          break if @skip_adjustment
+          break if @processing_data_attributes["skip_adjustment"]
         end
         tab_set
       end
     end
-    tab_set( @skip_adjustment )
+    tab_set(@processing_data_attributes["skip_adjustment"])
   end
 
   def change_decimal_seperation(continue_processing_data)
     return continue_processing_data.to_s.gsub(/[.]/, ',')
   end
 
-  def populate_template(datset)
+  def populate_template(dataset)
     open_template
     tab_index = 1
     @@records.each do |boxes_in_actual_tab|
-      @non_busy_boxes = []
+      @processing_data_attributes = {}
+      @non_busy_boxes             = []
       boxes_in_actual_tab.each do |box_info|
-        identify_value(datset, box_info)
+        enter_value(dataset, box_info)
       end
       break if tab_index == 4
       send_keys('^{PGDN}')
@@ -188,6 +224,8 @@ class FormFiller
   end
 
   def start_calculation #besser waere es, wenn der button "ergebnis" direkt angesprochen werden kann
+    tab_set(15)  #sichergehen, dass ergebnis-button erreicht wird
+    tab_set(-2)
     sleep 2
     confirm_input
     sleep(0.1)
@@ -208,7 +246,4 @@ class FormFiller
 
 end
 
-#@todo: berechnetes box (groesser als 0 etc)
-#@todo: code refactoring bsp: tastensenden vor if
-#@todo: strg pagedown fuer registerknatureen wechseln
 #@todo: excel_leser anbindung
