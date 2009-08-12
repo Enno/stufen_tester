@@ -16,8 +16,6 @@ class ExcelLeser #< ExcelController
     @excel_controller = ExcelController.new(pfad)
     @excel_controller.open_excel_file(pfad)
     @xlapp = @excel_controller.excel_appl
-    @leerzeilen = 1 # anzahl der leerzeilen zwischen ueberschrift und beginn
-    # der datensaetze im excelsheet "Tabelle"
   end
 
   def zeile_als_array(zeilen_nr) #liest eine zeile aus dem blatt "tabelle" ein
