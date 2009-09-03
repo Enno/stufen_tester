@@ -88,7 +88,7 @@ class FormFiller
           :nature           => :radio_group,
           :select_list      => [true, false], #["netto", "brutto"]
           :default_value    => true
-      }},
+        }},
     ],[
       :vl_arbeitgeber,
       {:vl_gesamt => {
@@ -206,10 +206,11 @@ class FormFiller
   end
 
   def change_decimal_seperation(continue_processing_data)
-    return continue_processing_data.to_s.gsub(/[.]/, ',')
+     return continue_processing_data.to_s.gsub(/[.]/, ',')
   end
 
   def populate_template(dataset)
+    puts [:populate, dataset.inspect]
     open_template
     tab_index = 1
     @@records.each do |boxes_in_actual_tab|
@@ -228,7 +229,7 @@ class FormFiller
   def start_calculation #besser waere es, wenn der button "ergebnis" direkt angesprochen werden kann
     tab_set(15)  #sichergehen, dass ergebnis-button erreicht wird
     tab_set(-2)
-    sleep 2
+    sleep 1
     confirm_input
     sleep(0.1)
     confirm_input
@@ -247,5 +248,3 @@ class FormFiller
   end
 
 end
-
-#@todo: excel_leser anbindung
