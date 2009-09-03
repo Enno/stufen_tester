@@ -82,7 +82,7 @@ describe FormFiller do
       :durchfuehrungsweg      => "Direktversicherung",
       :pausch_steuer40b       => true,
       :minijob_ok             => false,
-      :kinderlos              => true,
+      :kinderlos              => false,
 
 #      :nvz                    => true,
       :verzicht_betrag        => 57.57,
