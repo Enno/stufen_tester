@@ -19,20 +19,22 @@ class FormFiller
     @xlapp = @excel_controller.excel_appl
     @template_controller = TastenSender.new(:wartezeit => 0.2)
     WIN32OLE.codepage = WIN32OLE::CP_UTF8 #zeichen als unicode verarbeiten
-
+ 
+    p @xlapp.version
     case @xlapp.version
     when "12.0"
       @window_name = 'Microsoft Excel' #fuer office 07 anwendungen
       @access_to_macro = 1.0
-    when "11.0"
+    when "11.0", "10.0"
       @window_name = "Microsoft Excel - #{@file_name}" # für Office XP/2002
       @access_to_macro = 0.5
+      p "schnelles Excel"
     end
   end
 
   def open_template
     @template_controller.sende_tasten(@window_name, "%{F8}#{@proc_name}%{a}", :wartezeit => 0.2, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
-    sleep(@access_to_macro)
+    sleep(@access_to_macro||0.7)
   end
 
   def tab_set(numbers = 1)
