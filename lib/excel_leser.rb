@@ -30,10 +30,18 @@ class ExcelLeser #< ExcelController
     end
   end
 
+  def werte_auf_integer_pruefen(aktuelle_zeile)
+    aktuelle_zeile.each_with_index do |wert, index|
+      aktuelle_zeile[index] = wert.to_i if wert.is_a?(Float) && wert.to_s.match(/[.0]+$/)
+    end
+    return aktuelle_zeile
+  end
+
   def zeile(zeilen_nummer)
     erg = {}
     blatt_ueberschriften = zeile_als_array(19)
     aktuelle_zeile = zeile_als_array(zeilen_nummer)
+    werte_auf_integer_pruefen(aktuelle_zeile)
     SPALTEN_UEBERSCHRIFTEN.each do |ueberschrift_bezeichnung, ueberschrift_vorgegeben|
       catch :ueberspringen do
         spalten_nr = blatt_ueberschriften.each_with_index do |ueberschrift_aus_blatt, index|

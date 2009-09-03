@@ -18,7 +18,8 @@ class FormFiller
     @excel_controller.open_excel_file(path + file_name)
     @xlapp = @excel_controller.excel_appl
     @template_controller = TastenSender.new(:wartezeit => 0.2)
- 
+    WIN32OLE.codepage = WIN32OLE::CP_UTF8 #zeichen als unicode verarbeiten
+
     case @xlapp.version
     when "12.0"
       @window_name = 'Microsoft Excel' #fuer office 07 anwendungen
@@ -63,13 +64,25 @@ class FormFiller
           :default_value    => "g",
           :deactivates      => [:kinderlos]
         }},
-      :steuerklasse,
+      {:steuerklasse=> {
+          :nature             => :direkt,
+          :select_list        => ["I", "II", "III", "IV", "V", "VI"],
+          :default_value      => ["V", "VI"],
+          :activates          => [:kinder_fb],
+          :skip_adjustment    => 0
+        }},
       :kinder_fb,
       {:kirchensteuer       => true},
       :bland_wohnsitz,
       :bland_arbeit,
       :berufsgruppe,
-      :durchfuehrungsweg,
+      {:durchfuehrungsweg   => {
+          :nature             => :direkt,
+          :select_list        => ["Direktversicherung", "Pensionskasse", "Unterstützungskasse"],
+          :default_value      => "Unterstützungskasse",
+          :activates          => [:pausch_steuer40b],
+          :skip_adjustment    => 0
+        }},
       {:pausch_steuer40b    => false},
       {:minijob_ok          => false},
       {:kinderlos           => false},
@@ -149,12 +162,19 @@ class FormFiller
       skip_adjustment     = @right_side[:skip_adjustment]
       select_list         = @right_side[:select_list]
       default_value       = @right_side[:default_value]
-      
-      non_busy_boxes_new = (@continue_processing_data != default_value ?
-          @right_side[:deactivates] :
-          @right_side[:activates])
-      @non_busy_boxes     += non_busy_boxes_new if non_busy_boxes_new
-
+      if default_value.is_a?(Array)
+        default_value.each do |value|
+          non_busy_boxes_new = (@continue_processing_data != value ?
+              @right_side[:deactivates] :
+              @right_side[:activates])
+          @non_busy_boxes     += non_busy_boxes_new if non_busy_boxes_new
+        end
+      else
+        non_busy_boxes_new = (@continue_processing_data != default_value ?
+            @right_side[:deactivates] :
+            @right_side[:activates])
+        @non_busy_boxes     += non_busy_boxes_new if non_busy_boxes_new
+      end
     else
       skip_adjustment     = 0
       case @nature
@@ -204,11 +224,10 @@ class FormFiller
   end
 
   def change_decimal_seperation(continue_processing_data)
-     return continue_processing_data.to_s.gsub(/[.]/, ',')
+    return continue_processing_data.to_s.gsub(/[.]/, ',')
   end
 
   def populate_template(dataset)
-    puts [:populate, dataset.inspect]
     open_template
     tab_index = 1
     @@records.each do |boxes_in_actual_tab|

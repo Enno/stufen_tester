@@ -50,56 +50,58 @@ describe StufenTester do
   #    @stufen_tester.close_source_file
   #  end
   
-  it "sollte zeile 23 einlesen und ins template einfuegen" do
-    zeilennr = 23
-    zeile = @stufen_tester.readin_source_data(zeilennr)
-    puts zeile.inspect
-    @stufen_tester.write_source_data_into_template(zeile)
-    keys_zu_stufenrechner_namen = {
-      :name                    => "name",
-      :bruttogehalt            => "gehalt",
-      #:freibetrag              => "Freibetrag",
-      #"kv_pflicht",
-      #"KV_privat",
-      #    :steuerklasse       => "Steuerklasse", # problem: roemische und lateinische ziffern
-      :kinder_fb               => "kinderfreibetraege",
-      :kirchensteuer           => "Kirchensteuer",
-      #    :bland_wohnsitz     => "Wohnsitz",
-      #    :bland_arbeit       => "arbeitsstaette",
-      :berufsgruppe            => "Berufsgruppe",
-      :durchfuehrungsweg       => "bavweg",
-      :pausch_steuer40b        => "dive_40b_vorhanden",
-      :minijob_ok              => "Minijob",
-      :kinderlos               => "erh_pvsatz",
+  it "sollte alle zeilen einlesen und ins template einfuegen" do
+    i = 0
+    9.times do
+      zeilennr = 21 + i
+      i += 1
+      zeile = @stufen_tester.readin_source_data(zeilennr)
+      @stufen_tester.write_source_data_into_template(zeile)
+      keys_zu_stufenrechner_namen = {
+        :name                    => "name",
+        :bruttogehalt            => "gehalt",
+        #:freibetrag              => "Freibetrag",
+        #"kv_pflicht",
+        #"KV_privat",
+        #    :steuerklasse       => "Steuerklasse", # problem: roemische und lateinische ziffern
+        :kinder_fb               => "kinderfreibetraege",
+        :kirchensteuer           => "Kirchensteuer",
+        #    :bland_wohnsitz     => "Wohnsitz",
+        #    :bland_arbeit       => "arbeitsstaette",
+        :berufsgruppe            => "Berufsgruppe",
+        :durchfuehrungsweg       => "bavweg",
+        :pausch_steuer40b        => "dive_40b_vorhanden",
+        :minijob_ok              => "Minijob",
+        :kinderlos               => "erh_pvsatz",
 
-      #      :nvz            => "nvz",
-      :verzicht_betrag         => "nvz_betrag",
-      :verzicht_als_netto      => "nvz_netto",
-      #      :verzicht_als_netto      => "nvz_brutto",
-      :vl_arbeitgeber          => "VL_AG",
-      :vl_arbeitnehmer         => "VL_AN",
-      #"VL_gesamt",
-      :vl_als_beitrag          => "vl",
-      ##"kv_satz_durchschn",
-      ##"kv_satz_indiv_satz",
-      ##"KV_Satz",
-      ##"kv_wechsel",
-      ##"kv_satz_neu",
-      #      :ag_zuschuss_ok          => "AG_Zuschuss",
-      :ag_zuschuss             => "AG_Beitrag",
-      :ag_zuschuss_als_absolut => "ag_betrag", #"ag_prozent",
-      ##"vetrieb",
-      #"pv_pflicht"
-    }
+        #      :nvz            => "nvz",
+        :verzicht_betrag         => "nvz_betrag",
+        :verzicht_als_netto      => "nvz_netto",
+        #      :verzicht_als_netto      => "nvz_brutto",
+        :vl_arbeitgeber          => "VL_AG",
+        :vl_arbeitnehmer         => "VL_AN",
+        #"VL_gesamt",
+        :vl_als_beitrag          => "vl",
+        ##"kv_satz_durchschn",
+        ##"kv_satz_indiv_satz",
+        ##"KV_Satz",
+        ##"kv_wechsel",
+        ##"kv_satz_neu",
+        #      :ag_zuschuss_ok          => "AG_Zuschuss",
+        :ag_zuschuss             => "AG_Beitrag",
+        :ag_zuschuss_als_absolut => "ag_betrag", #"ag_prozent",
+        ##"vetrieb",
+        #"pv_pflicht"
+      }
 
-    keys_zu_stufenrechner_namen.each do |key, sr_name|
-      [key, @stufen_tester.checkout_destination_data("Abfrage_Feld_#{sr_name}")].should == [key, zeile[key]]
+      keys_zu_stufenrechner_namen.each do |key, sr_name|
+        [key, @stufen_tester.checkout_destination_data("Abfrage_Feld_#{sr_name}")].should == [key, zeile[key]]
+      end
+      puts "#{keys_zu_stufenrechner_namen.size} felder getestet"
+      @stufen_tester.close_source_file
+      @stufen_tester.close_destination_file
     end
-    puts "#{keys_zu_stufenrechner_namen.size} felder getestet"
-    @stufen_tester.close_source_file
-    @stufen_tester.close_destination_file
   end
-
 
 end
 
