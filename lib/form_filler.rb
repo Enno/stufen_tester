@@ -69,7 +69,7 @@ class FormFiller
       {:steuerklasse=> {
           :nature             => :direkt,
           :select_list        => ["I", "II", "III", "IV", "V", "VI"],
-          :default_value      => ["V", "VI"],
+          :deakt_values      => ["V", "VI"],
           :activates          => [:kinder_fb],
           :skip_adjustment    => 0
         }},
@@ -164,20 +164,14 @@ class FormFiller
       skip_adjustment     = @right_side[:skip_adjustment]
       select_list         = @right_side[:select_list]
       default_value       = @right_side[:default_value]
-      if default_value.is_a?(Array)
-        default_value.each do |value|
+      deakt_values = @right_side[:deakt_value] || [default_value]  ##TODO:
+        deakt_values.each do |value|
           non_busy_boxes_new = (@continue_processing_data != value ?
               @right_side[:deactivates] :
               @right_side[:activates])
           @non_busy_boxes     += non_busy_boxes_new if non_busy_boxes_new
         end
-      else
-        non_busy_boxes_new = (@continue_processing_data != default_value ?
-            @right_side[:deactivates] :
-            @right_side[:activates])
-        @non_busy_boxes     += non_busy_boxes_new if non_busy_boxes_new
-      end
-    else
+     else
       skip_adjustment     = 0
       case @nature
       when :checkbox
