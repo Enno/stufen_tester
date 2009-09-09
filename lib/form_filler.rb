@@ -41,7 +41,7 @@ class FormFiller
     return unless numbers
     shift_code = numbers < 0 ? "+" : ""
     send_tabs = "#{shift_code}{TAB}" * numbers.abs
-    send_keys("#{send_tabs}", :wartezeit => 0.01)
+    send_keys("#{send_tabs}", :wartezeit => 0.05)
   end
 
   def confirm_input
@@ -250,12 +250,12 @@ class FormFiller
     tab_set(-2)
     sleep 1
     confirm_input
-    sleep(0.1)
+    sleep(0.2)
     confirm_input
   end
 
-  def vb_send(vb_request)
-    @xlapp.Run "#{@file_name}!#{vb_request}"
+  def vb_send(vb_procedure_name, *args)
+    @xlapp.Run "#{@file_name}!#{vb_procedure_name}", *args
   end
 
   def close_template #ueber button "schliessen" siehe kommentar "start_calculation"

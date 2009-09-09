@@ -35,8 +35,8 @@ class StufenTester
     @ff.populate_template(source_data)
   end
 
-  def checkout_destination_data(vb_field_name)
-    @ff.vb_send(vb_field_name)
+  def call_destination_function(vb_function_name, *args)
+    @ff.vb_send(vb_function_name, *args)
   end
 
   def close_source_file

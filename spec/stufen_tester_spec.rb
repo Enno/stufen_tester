@@ -5,7 +5,7 @@ describe StufenTester do
   before(:each) do
     source_file = "test.xls"
     source_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
-    destination_file = "sr38a_entkernt_test.xls"
+    destination_file = "sr38a_op_tor2.xls"
     destination_file_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
     start_proc_name = "Entgeltumwandlungsrechner_starten"
     @stufen_tester = StufenTester.new(source_path, source_file, destination_file_path, destination_file, start_proc_name)
@@ -29,19 +29,19 @@ describe StufenTester do
   #  end
 
 
-  it "sollte existieren" do
-    @stufen_tester.should_not be_nil
-  end
-  
-  it "sollte excel (source) oeffnen" do
-    @stufen_tester.open_source_file
-    @stufen_tester.close_source_file
-  end
-  
-  it "sollte excel (destination) oeffnen" do
-    @stufen_tester.open_destination_file
-    @stufen_tester.close_destination_file
-  end
+#  it "sollte existieren" do
+#    @stufen_tester.should_not be_nil
+#  end
+#
+#  it "sollte excel (source) oeffnen" do
+#    @stufen_tester.open_source_file
+#    @stufen_tester.close_source_file
+#  end
+#
+#  it "sollte excel (destination) oeffnen" do
+#    @stufen_tester.open_destination_file
+#    @stufen_tester.close_destination_file
+#  end
 
   #  it "sollte zeile 22 einlesen" do
   #    z22 = @stufen_tester.readin_source_data(22)
@@ -51,11 +51,14 @@ describe StufenTester do
   #  end
   
   it "sollte alle zeilen einlesen und ins template einfuegen" do
-    i = 0
-    9.times do
-      zeilennr = 21 + i
-      i += 1
+    steuern_akt = [nil, nil, 256.08, 227.07, 36.0]
+    #[1,2,3,4,5,6,7,8,9]
+    [nil, nil, 2, 3, 4].each do |i|
+      next unless i
+      
+      zeilennr = 20 + i
       zeile = @stufen_tester.readin_source_data(zeilennr)
+
       @stufen_tester.write_source_data_into_template(zeile)
       keys_zu_stufenrechner_namen = {
         :name                    => "name",
@@ -95,9 +98,10 @@ describe StufenTester do
       }
 
       keys_zu_stufenrechner_namen.each do |key, sr_name|
-        [key, @stufen_tester.checkout_destination_data("Abfrage_Feld_#{sr_name}")].should == [key, zeile[key]]
+        [i, key, @stufen_tester.call_destination_function("Abfrage_Feld_#{sr_name}")].should == [i, key, zeile[key]]
       end
-      puts "#{keys_zu_stufenrechner_namen.size} felder getestet"
+      puts "Zeile: #{i}: #{keys_zu_stufenrechner_namen.size} Felder getestet"
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "steuern", "akt").should == steuern_akt[i]
       @stufen_tester.close_source_file
       @stufen_tester.close_destination_file
     end
