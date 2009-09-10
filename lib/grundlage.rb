@@ -30,16 +30,36 @@ SPALTEN_UEBERSCHRIFTEN = {
 	:steuerklasse     => /Steuer-\sklasse/,
   :kirchensteuer    => /Kirchen-\ssteuer/,
   :kinder_fb        => /Kinder-\sfreibetrag/,
-  :kinderlos        => /Kinderlos/,
+  :kinderlos        => /Kinderlos\s(erhöhter PV-Satz für unter 23-jährige)/,
   :verzicht_betrag  => /Netto-\/\s*Bruttoverzicht/,
   :vl_arbeitgeber   => /Arbeitgeber-\santeil VL/,
   :vl_arbeitnehmer  => /Arbeitnehmer-\santeil VL/,
-  :vl_gesamt        => nil,
+  #:vl_gesamt        => nil,
   :bland_wohnsitz   => /Bundesland \sWohnsitz/,
   :bland_arbeit     => /Bundesland\sArbeitsstätte/,
   :berufsgruppe     => /Berufsgruppe/,
-  :pausch_steuer40b	=> /Pauschalversteuerung Nach \s40b EStG wird aktuell genutzt/
+  :pausch_steuer40b	=> /Pauschalversteuerung Nach \s40b EStG wird aktuell genutzt/,
+
+  :akt_gehaltsabr_monatl_brutto_gehalt => /monatliches \sBruttogehalt/,
+  :akt_gehaltsabr_ag_anteil_vl         => /AG-Anteil VL/,
+  :akt_gehaltsabr_beitrag_aus_nv       => /Beitrag aus \sNettoverzicht/,
+  :akt_gehaltsabr_beitrag_aus_vl_gesamt => /Beitrag aus VL \s(gesamt)/,
+  :akt_gehaltsabr_beitrag_aus_an_vl    => /Beitrag aus \sArbeitnehmeranteil VL/,
+  :akt_gehaltsabr_gesamt_brutto        => /Gesamt-Brutto/,
+  :akt_gehaltsabr_steuern              => /Steuern \s(inkl. Soli; Ki.-St.)/,
+  :akt_gehaltsabr_sv_beitraege         => /SV-Beiträge/,
+  :akt_gehaltsabr_netto_gehalt         => /Nettogehalt/,
+  :akt_gehaltsabr_ueberweisung_vl      => /Überweisung VL/,
+  :akt_gehaltsabr_ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/
 }
+
+#ABSCHNITTS_UEBERSCHRIFTEN = {
+#  :persoenliche_daten            => nil,
+#  :aktuelle_gehaltsabrechnung    => /Aktuelle Gehaltsabrechnung/,
+#  :netto_verzicht                => /Nettoverzicht x €/,
+#  :vermoegenswirksame_leistungen => /vermögenswirksame Leistungen/,
+#  :arbeitgeberzuschuss           => nil
+#}
 
 EXCEL_EINLESE_TRANSFORMATIONEN = {
   :minijob_ok               => {"ja"    => true, "nein"   => false},

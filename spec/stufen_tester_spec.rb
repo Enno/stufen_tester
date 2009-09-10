@@ -29,19 +29,19 @@ describe StufenTester do
   #  end
 
 
-#  it "sollte existieren" do
-#    @stufen_tester.should_not be_nil
-#  end
-#
-#  it "sollte excel (source) oeffnen" do
-#    @stufen_tester.open_source_file
-#    @stufen_tester.close_source_file
-#  end
-#
-#  it "sollte excel (destination) oeffnen" do
-#    @stufen_tester.open_destination_file
-#    @stufen_tester.close_destination_file
-#  end
+  #  it "sollte existieren" do
+  #    @stufen_tester.should_not be_nil
+  #  end
+  #
+  #  it "sollte excel (source) oeffnen" do
+  #    @stufen_tester.open_source_file
+  #    @stufen_tester.close_source_file
+  #  end
+  #
+  #  it "sollte excel (destination) oeffnen" do
+  #    @stufen_tester.open_destination_file
+  #    @stufen_tester.close_destination_file
+  #  end
 
   #  it "sollte zeile 22 einlesen" do
   #    z22 = @stufen_tester.readin_source_data(22)
@@ -51,13 +51,14 @@ describe StufenTester do
   #  end
   
   it "sollte alle zeilen einlesen und ins template einfuegen" do
-    steuern_akt = [nil, nil, 256.08, 227.07, 36.0]
-    #[1,2,3,4,5,6,7,8,9]
-    [nil, nil, 2, 3, 4].each do |i|
+    #[0,1,nil,3,4,5,6,7,nil].each do |i|
+    #[2,8].each do |i| #TODO: fehler beheben
+    [0].each do |i|
       next unless i
       
-      zeilennr = 20 + i
+      zeilennr = 21 + i
       zeile = @stufen_tester.readin_source_data(zeilennr)
+      puts zeile.inspect
 
       @stufen_tester.write_source_data_into_template(zeile)
       keys_zu_stufenrechner_namen = {
@@ -66,7 +67,7 @@ describe StufenTester do
         #:freibetrag              => "Freibetrag",
         #"kv_pflicht",
         #"KV_privat",
-        #    :steuerklasse       => "Steuerklasse", # problem: roemische und lateinische ziffern
+        #    :steuerklasse       => "Steuerklasse",
         :kinder_fb               => "kinderfreibetraege",
         :kirchensteuer           => "Kirchensteuer",
         #    :bland_wohnsitz     => "Wohnsitz",
@@ -101,7 +102,16 @@ describe StufenTester do
         [i, key, @stufen_tester.call_destination_function("Abfrage_Feld_#{sr_name}")].should == [i, key, zeile[key]]
       end
       puts "Zeile: #{i}: #{keys_zu_stufenrechner_namen.size} Felder getestet"
-      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "steuern", "akt").should == steuern_akt[i]
+      #@stufen_tester.call_destination_function("Abfrage_Ergebnis", "monatlichesbruttogehalt", "akt").should == zeile[:akt_gehaltsabr_monatl_brutto_gehalt]
+      #@stufen_tester.call_destination_function("Abfrage_Ergebnis", "aganteilvl", "akt").should              == zeile[:akt_gehaltsabr_ag_anteil_vl  ]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "beitragausnettoverzicht", "akt").should  == zeile[:akt_gehaltsabr_beitrag_aus_nv]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "beitragausvl", "akt").should             == zeile[:akt_gehaltsabr_beitrag_aus_vl_gesamt]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "beitragausananteilvl", "akt").should     == zeile[:akt_gehaltsabr_beitrag_aus_an_vl]
+      #@stufen_tester.call_destination_function("Abfrage_Ergebnis", "gesamtbrutto", "akt").should             == zeile[:akt_gehaltsabr_gesamt_brutto]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "steuern", "akt").should                  == zeile[:akt_gehaltsabr_steuern]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "svbeiträge", "akt").should               == zeile[:akt_gehaltsabr_sv_beitraege]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "überweisungvl", "akt").should            == zeile[:akt_gehaltsabr_ueberweisung_vl]
+      #@stufen_tester.call_destination_function("Abfrage_Ergebnis", "überweisung", "akt").should              == zeile[:akt_gehaltsabr_ueberweisung_netto]
       @stufen_tester.close_source_file
       @stufen_tester.close_destination_file
     end

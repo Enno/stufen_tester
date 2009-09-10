@@ -17,7 +17,7 @@ class FormFiller
     @excel_controller = ExcelController.new(path + file_name)
     @excel_controller.open_excel_file(path + file_name)
     @xlapp = @excel_controller.excel_appl
-    @template_controller = TastenSender.new(:wartezeit => 0.2)
+    @template_controller = TastenSender.new(:wartezeit => 0.5)
     WIN32OLE.codepage = WIN32OLE::CP_UTF8 #zeichen als unicode verarbeiten
  
     p @xlapp.version
@@ -41,7 +41,7 @@ class FormFiller
     return unless numbers
     shift_code = numbers < 0 ? "+" : ""
     send_tabs = "#{shift_code}{TAB}" * numbers.abs
-    send_keys("#{send_tabs}", :wartezeit => 0.05)
+    send_keys("#{send_tabs}", :wartezeit => 0.02)
   end
 
   def confirm_input

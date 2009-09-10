@@ -80,7 +80,7 @@ describe FormFiller do
       #:bland_arbeit=>"Berlin-West",
       :berufsgruppe           => "Angestellte/Arbeiter",
       :durchfuehrungsweg      => "Direktversicherung", #"Unterstützungskasse",
-      :pausch_steuer40b       => true,
+      :pausch_steuer40b       => false,
       :minijob_ok             => false,
       :kinderlos              => false,
 

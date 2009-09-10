@@ -38,36 +38,40 @@ class ExcelLeser #< ExcelController
   end
 
   def zeile(zeilen_nummer)
-    erg = {}
-    blatt_ueberschriften = zeile_als_array(19)
+    @erg = {}
+    spalten_ueberschriften = zeile_als_array(19)
     aktuelle_zeile = zeile_als_array(zeilen_nummer)
     werte_auf_integer_pruefen(aktuelle_zeile)
+    lese_pers_daten(spalten_ueberschriften, aktuelle_zeile)
+    GLOBALBLATT_NAMEN.each do |namenfeld_bezeichnung, namenfeld_vorgegeben|
+      aktuelles_namenfeld = namenfeld_wert(namenfeld_vorgegeben)
+      @erg[namenfeld_bezeichnung] = aktuelles_namenfeld
+    end
+    EXCEL_EINLESE_TRANSFORMATIONEN.each do |key, trafo_hash|
+      alter_wert = @erg[key]
+      neuer_wert = trafo_hash[alter_wert]
+      @erg[key] = neuer_wert
+      #alternative: erg[key] = trafo_hash[erg[key]]
+    end
+    return @erg
+  end
+
+  def lese_pers_daten(spalten_ueberschriften, aktuelle_zeile)
     SPALTEN_UEBERSCHRIFTEN.each do |ueberschrift_bezeichnung, ueberschrift_vorgegeben|
       catch :ueberspringen do
-        spalten_nr = blatt_ueberschriften.each_with_index do |ueberschrift_aus_blatt, index|
-          break nil if ueberschrift_aus_blatt.nil?
-          throw :ueberspringen if ueberschrift_vorgegeben.nil?
+        spalten_nr = spalten_ueberschriften.each_with_index do |ueberschrift_aus_blatt, index|
+          next nil if ueberschrift_aus_blatt.nil?
+          throw :ueberspringen if (ueberschrift_vorgegeben.nil?)
           regex_neu = Regexp.new(ueberschrift_vorgegeben.source, Regexp::MULTILINE | Regexp::IGNORECASE )
           break index if ueberschrift_aus_blatt.gsub(/[)(]/,"") =~ regex_neu
         end
         if spalten_nr.is_a? Integer
-          erg[ueberschrift_bezeichnung] = aktuelle_zeile[spalten_nr]
+          @erg[ueberschrift_bezeichnung] = aktuelle_zeile[spalten_nr]
         else
           raise "Überschrift '#{ueberschrift_vorgegeben}' (für #{ueberschrift_bezeichnung}) nicht gefunden."
         end
       end
     end
-    GLOBALBLATT_NAMEN.each do |namenfeld_bezeichnung, namenfeld_vorgegeben|
-      aktuelles_namenfeld = namenfeld_wert(namenfeld_vorgegeben)
-      erg[namenfeld_bezeichnung] = aktuelles_namenfeld
-    end
-    EXCEL_EINLESE_TRANSFORMATIONEN.each do |key, trafo_hash|
-      alter_wert = erg[key]
-      neuer_wert = trafo_hash[alter_wert]
-      erg[key] = neuer_wert
-     #alternative: erg[key] = trafo_hash[erg[key]]
-    end
-    return erg
   end
 
   def excel_beenden

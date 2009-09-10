@@ -12,7 +12,7 @@ describe ExcelLeser do
     @el.excel_beenden
   end
 
-#=begin
+  #=begin
   it "sollte existieren" do
     @el.should_not be_nil
   end
@@ -38,6 +38,17 @@ describe ExcelLeser do
     z21 = @el.zeile(21)
     z21[:name].should                  == "Gerda Müller"
     z21[:berufsgruppe].should          == "Angestellte/Arbeiter"
+    z21[:akt_gehaltsabr_monatl_brutto_gehalt].should               == 2000
+    z21[:akt_gehaltsabr_ag_anteil_vl].should                       == 40.00
+    z21[:akt_gehaltsabr_beitrag_aus_nv].should                     == 0.00
+    z21[:akt_gehaltsabr_beitrag_aus_vl_gesamt].should              == 0.00
+    z21[:akt_gehaltsabr_beitrag_aus_an_vl].should                  == 0.00
+    z21[:akt_gehaltsabr_gesamt_brutto].should                      == 2040.00
+    z21[:akt_gehaltsabr_steuern].should                            == 283.39
+    z21[:akt_gehaltsabr_sv_beitraege].should                       == 418.71
+    z21[:akt_gehaltsabr_netto_gehalt].should                       == 1337.90
+    z21[:akt_gehaltsabr_ueberweisung_vl].should                    == 40.00
+    z21[:akt_gehaltsabr_ueberweisung_netto].should                 == 1297.90
   end
 
   it "sollte ausreichend Spalten enthalten" do
@@ -51,7 +62,7 @@ describe ExcelLeser do
     s23[:bland_wohnsitz].should   == "Hessen"
     s23[:bland_arbeit].should     == "Niedersachsen"
   end
-#=end
+  #=end
   it "sollte auch die globalen Werte einlesen" do
     nf = @el.zeile(23)
     nf[:minijob_ok].should                    == false
