@@ -51,43 +51,45 @@ keys_zu_vb_abfrage_namen = {
   :akt_gehaltsabr_ueberweisung_netto    => "überweisung"
 }
 
-[0, 1, 2].each do |i|
-  next unless i
+describe StufenTester do
+  before(:all) do
+    source_file = "test.xls"
+    source_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
+    destination_file = "sr38a_op_tor2.xls"
+    destination_file_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
+    start_proc_name = "Entgeltumwandlungsrechner_starten"
+    @stufen_tester = StufenTester.new(source_path, source_file, destination_file_path, destination_file, start_proc_name)
+  end
+
+  [0, nil, 2].each do |i|
+    next unless i
   
-  describe StufenTester, "in Zeile #{i}" do
-    before(:all) do
-      source_file = "test.xls"
-      source_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
-      destination_file = "sr38a_op_tor2.xls"
-      destination_file_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
-      start_proc_name = "Entgeltumwandlungsrechner_starten"
-      @stufen_tester = StufenTester.new(source_path, source_file, destination_file_path, destination_file, start_proc_name)
-      zeilennr = 21 + i
-      @zeile = @stufen_tester.readin_source_data(zeilennr)
-      puts @zeile.inspect
-      @stufen_tester.write_source_data_into_template(@zeile)
-    end
-
-    after(:all) do
-      @stufen_tester.close
-    end
-    
-    keys_zu_stufenrechner_namen.each do |key, sr_name|
-      it "sollte bei #{key} mit Stufenrechner-Feld #{sr_name} übereinstimmen" do
-        @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}").should == @zeile[key]
+    describe StufenTester, "in Zeile #{i}" do
+      before(:all) do
+        zeilennr = 21 + i
+        @zeile = @stufen_tester.readin_source_data(zeilennr)
+        puts @zeile.inspect
+        @stufen_tester.write_source_data_into_template(@zeile)
       end
-    end
-    #      puts "Zeile: #{i}: #{keys_zu_stufenrechner_namen.size} Felder getestet"
 
-    keys_zu_vb_abfrage_namen.each do |key, vb_name|
-      it "sollte bei #{key} mit VB-Abfrage-Feld #{vb_name} übereinstimmen" do
-        @zeile[key].should == @stufen_tester.check_reference_data("Abfrage_Ergebnis", vb_name, "akt")
+      after(:all) do
+        @stufen_tester.close
+      end
+   
+      keys_zu_stufenrechner_namen.each do |key, sr_name|
+        it "sollte bei #{key} mit Stufenrechner-Feld #{sr_name} übereinstimmen" do
+          @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}").should == @zeile[key]
+        end
+      end
+
+      keys_zu_vb_abfrage_namen.each do |key, vb_name|
+        it "sollte bei #{key} mit VB-Abfrage-Feld #{vb_name} übereinstimmen" do
+          @zeile[key].should == @stufen_tester.check_reference_data("Abfrage_Ergebnis", vb_name, "akt")
+        end
       end
 
     end
   end
-
-
 end
 
 
