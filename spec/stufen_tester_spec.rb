@@ -51,7 +51,7 @@ keys_zu_vb_abfrage_namen = {
   :akt_gehaltsabr_ueberweisung_netto    => "überweisung"
 }
 
-[0, nil, 2].each do |i|
+[0, 1, 2].each do |i|
   next unless i
   
   describe StufenTester, "in Zeile #{i}" do
@@ -81,7 +81,7 @@ keys_zu_vb_abfrage_namen = {
 
     keys_zu_vb_abfrage_namen.each do |key, vb_name|
       it "sollte bei #{key} mit VB-Abfrage-Feld #{vb_name} übereinstimmen" do
-        @stufen_tester.check_reference_data("Abfrage_Ergebnis", vb_name, "akt").should == @zeile[key]
+        @zeile[key].should == @stufen_tester.check_reference_data("Abfrage_Ergebnis", vb_name, "akt")
       end
 
     end
