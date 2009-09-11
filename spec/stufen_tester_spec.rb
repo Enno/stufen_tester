@@ -51,8 +51,8 @@ keys_zu_vb_abfrage_namen = {
   :akt_gehaltsabr_ueberweisung_netto    => "überweisung"
 }
 
-[0, 1, 2].each do |i|
-  next unless i
+[0, 1, -2, -3, -4, -5, 6, 7, 8, 9].each do |i|
+  next if i.nil? or i < 0
   
   describe StufenTester, "in Zeile #{i}" do
     before(:all) do
