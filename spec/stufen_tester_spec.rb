@@ -61,7 +61,8 @@ describe StufenTester do
     @stufen_tester = StufenTester.new(source_path, source_file, destination_file_path, destination_file, start_proc_name)
   end
 
-  [0, nil, 2].each do |i|
+  #[0, nil, 2, 3, 4, 5, 6, 7, nil].each do |i|
+  [1].each do |i|
     next unless i
   
     describe StufenTester, "in Zeile #{i}" do
