@@ -2,7 +2,7 @@
 require File.dirname(File.dirname(__FILE__)) +  '/lib/excel_leser.rb'
 
 
-describe ExcelLeser do
+describe ExcelLeser, "mit realen Daten" do
   before(:each) do
     mappen_name = "test.xls"
     mappen_pfad = File.dirname(File.dirname(__FILE__)) +  "/daten/"
@@ -38,17 +38,17 @@ describe ExcelLeser do
     z21 = @el.zeile(21)
     z21[:name].should                  == "Gerda Müller"
     z21[:berufsgruppe].should          == "Angestellte/Arbeiter"
-    z21[:akt_gehaltsabr_monatl_brutto_gehalt].should               == 2000
+    z21[:akt_gehaltsabr_monatl_brutto_gehalt].should               == 2000.05
     z21[:akt_gehaltsabr_ag_anteil_vl].should                       == 40.00
     z21[:akt_gehaltsabr_beitrag_aus_nv].should                     == 0.00
     z21[:akt_gehaltsabr_beitrag_aus_vl_gesamt].should              == 0.00
     z21[:akt_gehaltsabr_beitrag_aus_an_vl].should                  == 0.00
-    z21[:akt_gehaltsabr_gesamt_brutto].should                      == 2040.00
+    z21[:akt_gehaltsabr_gesamt_brutto].should                      == 2040.05
     z21[:akt_gehaltsabr_steuern].should                            == 283.39
     z21[:akt_gehaltsabr_sv_beitraege].should                       == 418.71
-    z21[:akt_gehaltsabr_netto_gehalt].should                       == 1337.90
-    z21[:akt_gehaltsabr_ueberweisung_vl].should                    == 40.00
-    z21[:akt_gehaltsabr_ueberweisung_netto].should                 == 1297.90
+    z21[:akt_gehaltsabr_netto_gehalt].should                       == 1337.95
+    z21[:akt_gehaltsabr_ueberweisung_vl].should                    == 40
+    z21[:akt_gehaltsabr_ueberweisung_netto].should                 == 1297.95
   end
 
   it "sollte ausreichend Spalten enthalten" do
