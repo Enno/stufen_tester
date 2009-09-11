@@ -63,14 +63,44 @@ describe ExcelLeser, "mit realen Daten" do
   it "sollte Zeile 22 korrekt einlesen" do
     z22 = @el.zeile(22)
 
-    z22[:name].should                  == "Hans Meier"
-    z22[:verzicht_betrag].should       == 50.0
+    z22[:name].should                                              == "Hans Meier"
+    z22[:verzicht_betrag].should                                   == 50.0
+    z22[:akt_gehaltsabr_monatl_brutto_gehalt].should               == 2000.00
+    z22[:akt_gehaltsabr_ag_anteil_vl].should                       == 40.00
+    z22[:akt_gehaltsabr_beitrag_aus_nv].should                     == 0.00
+    z22[:akt_gehaltsabr_beitrag_aus_vl_gesamt].should              == 0.00
+    z22[:akt_gehaltsabr_beitrag_aus_an_vl].should                  == 0.00
+    z22[:akt_gehaltsabr_gesamt_brutto].should                      == 2040.00
+    z22[:akt_gehaltsabr_steuern].should                            == 256.08
+    z22[:akt_gehaltsabr_sv_beitraege].should                       == 231.54
+    z22[:akt_gehaltsabr_netto_gehalt].should                       == 1552.38
+    z22[:akt_gehaltsabr_ueberweisung_vl].should                    == 40.00
+    z22[:akt_gehaltsabr_ueberweisung_netto].should                 == 1512.38
+  end
+
+  it "sollte Zeile 29 korrekt einlesen" do
+    z29 = @el.zeile(29)
+
+    z29[:name].should                                              == "Hans Meier"
+    z29[:berufsgruppe].should                                      == "sozialversicherungsfreier GGF"
+    z29[:verzicht_betrag].should                                   == 22.0
+    z29[:akt_gehaltsabr_monatl_brutto_gehalt].should               == 10000.00
+    z29[:akt_gehaltsabr_ag_anteil_vl].should                       == 15.00
+    z29[:akt_gehaltsabr_beitrag_aus_nv].should                     == 0.00
+    z29[:akt_gehaltsabr_beitrag_aus_vl_gesamt].should              == 0.00
+    z29[:akt_gehaltsabr_beitrag_aus_an_vl].should                  == 0.00
+    z29[:akt_gehaltsabr_gesamt_brutto].should                      == 10015.00
+    z29[:akt_gehaltsabr_steuern].should                            == 4125.84
+    z29[:akt_gehaltsabr_sv_beitraege].should                       == 612.90
+    z29[:akt_gehaltsabr_netto_gehalt].should                       == 5276.26
+    z29[:akt_gehaltsabr_ueberweisung_vl].should                    == 40.00
+    z29[:akt_gehaltsabr_ueberweisung_netto].should                 == 5236.26
   end
 
   it "sollte Zeile 21 korrekt einlesen" do
     z21 = @el.zeile(21)
-    z21[:name].should                  == "Gerda Müller"
-    z21[:berufsgruppe].should          == "Angestellte/Arbeiter"
+    z21[:name].should                                              == "Gerda Müller"
+    z21[:berufsgruppe].should                                       == "Angestellte/Arbeiter"
     z21[:akt_gehaltsabr_monatl_brutto_gehalt].should               == 2000.05
     z21[:akt_gehaltsabr_ag_anteil_vl].should                       == 40.00
     z21[:akt_gehaltsabr_beitrag_aus_nv].should                     == 0.00
