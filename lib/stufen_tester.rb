@@ -35,7 +35,7 @@ class StufenTester
     @ff.populate_template(source_data)
   end
 
-  def call_destination_function(vb_function_name, *args)
+  def check_reference_data(vb_function_name, *args)
     @ff.vb_send(vb_function_name, *args)
   end
 
