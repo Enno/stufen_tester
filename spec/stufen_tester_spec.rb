@@ -1,17 +1,17 @@
 puts "stufen_tester_spec"
 require 'lib/stufen_tester'
 
-describe StufenTester do
-  before(:each) do
-    source_file = "test.xls"
-    source_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
-    destination_file = "sr38a_op_tor2.xls"
-    destination_file_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
-    start_proc_name = "Entgeltumwandlungsrechner_starten"
-    @stufen_tester = StufenTester.new(source_path, source_file, destination_file_path, destination_file, start_proc_name)
-  end
-  after(:each) do
-  end
+#describe StufenTester do
+#  before(:each) do
+#    source_file = "test.xls"
+#    source_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
+#    destination_file = "sr38a_op_tor2.xls"
+#    destination_file_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
+#    start_proc_name = "Entgeltumwandlungsrechner_starten"
+#    @stufen_tester = StufenTester.new(source_path, source_file, destination_file_path, destination_file, start_proc_name)
+#  end
+#  after(:each) do
+#  end
 
   #  def sende_tasten(*args, &blk)
   #    @tasten_sender.sende_tasten(*args, &blk)
@@ -49,69 +49,92 @@ describe StufenTester do
   #    z22[:verzicht_betrag].should       == 50.0
   #    @stufen_tester.close_source_file
   #  end
+#end
+
+keys_zu_stufenrechner_namen = {
+      :name                    => "name",
+      :bruttogehalt            => "gehalt",
+      #:freibetrag              => "Freibetrag",
+      #"kv_pflicht",
+      #"KV_privat",
+      #    :steuerklasse       => "Steuerklasse",
+      :kinder_fb               => "kinderfreibetraege",
+      :kirchensteuer           => "Kirchensteuer",
+      #    :bland_wohnsitz     => "Wohnsitz",
+      #    :bland_arbeit       => "arbeitsstaette",
+      :berufsgruppe            => "Berufsgruppe",
+      :durchfuehrungsweg       => "bavweg",
+      :pausch_steuer40b        => "dive_40b_vorhanden",
+      :minijob_ok              => "Minijob",
+      :kinderlos               => "erh_pvsatz",
+
+      #      :nvz            => "nvz",
+      :verzicht_betrag         => "nvz_betrag",
+      :verzicht_als_netto      => "nvz_netto",
+      #      :verzicht_als_netto      => "nvz_brutto",
+      :vl_arbeitgeber          => "VL_AG",
+      :vl_arbeitnehmer         => "VL_AN",
+      #"VL_gesamt",
+      :vl_als_beitrag          => "vl",
+      ##"kv_satz_durchschn",
+      ##"kv_satz_indiv_satz",
+      ##"KV_Satz",
+      ##"kv_wechsel",
+      ##"kv_satz_neu",
+      #      :ag_zuschuss_ok          => "AG_Zuschuss",
+      :ag_zuschuss             => "AG_Beitrag",
+      :ag_zuschuss_als_absolut => "ag_betrag", #"ag_prozent",
+      ##"vetrieb",
+      #"pv_pflicht"
+}
+
+
+
+#[0,1,nil,3,4,5,6,7,nil].each do |i|
+#[2,8].each do |i| #TODO: fehler beheben
+[0,nil,2,3,nil,5,6].each do |i|
+  next unless i
   
-  it "sollte alle zeilen einlesen und ins template einfuegen" do
-    #[0,1,nil,3,4,5,6,7,nil].each do |i|
-    #[2,8].each do |i| #TODO: fehler beheben
-    [0].each do |i|
-      next unless i
-      
+  describe StufenTester, "in Zeile #{i}" do
+    before(:all) do
+      source_file = "test.xls"
+      source_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
+      destination_file = "sr38a_op_tor2.xls"
+      destination_file_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
+      start_proc_name = "Entgeltumwandlungsrechner_starten"
+      @stufen_tester = StufenTester.new(source_path, source_file, destination_file_path, destination_file, start_proc_name)
+
       zeilennr = 21 + i
-      zeile = @stufen_tester.readin_source_data(zeilennr)
-      puts zeile.inspect
+      @zeile = @stufen_tester.readin_source_data(zeilennr)
+      puts @zeile.inspect
 
-      @stufen_tester.write_source_data_into_template(zeile)
-      keys_zu_stufenrechner_namen = {
-        :name                    => "name",
-        :bruttogehalt            => "gehalt",
-        #:freibetrag              => "Freibetrag",
-        #"kv_pflicht",
-        #"KV_privat",
-        #    :steuerklasse       => "Steuerklasse",
-        :kinder_fb               => "kinderfreibetraege",
-        :kirchensteuer           => "Kirchensteuer",
-        #    :bland_wohnsitz     => "Wohnsitz",
-        #    :bland_arbeit       => "arbeitsstaette",
-        :berufsgruppe            => "Berufsgruppe",
-        :durchfuehrungsweg       => "bavweg",
-        :pausch_steuer40b        => "dive_40b_vorhanden",
-        :minijob_ok              => "Minijob",
-        :kinderlos               => "erh_pvsatz",
-
-        #      :nvz            => "nvz",
-        :verzicht_betrag         => "nvz_betrag",
-        :verzicht_als_netto      => "nvz_netto",
-        #      :verzicht_als_netto      => "nvz_brutto",
-        :vl_arbeitgeber          => "VL_AG",
-        :vl_arbeitnehmer         => "VL_AN",
-        #"VL_gesamt",
-        :vl_als_beitrag          => "vl",
-        ##"kv_satz_durchschn",
-        ##"kv_satz_indiv_satz",
-        ##"KV_Satz",
-        ##"kv_wechsel",
-        ##"kv_satz_neu",
-        #      :ag_zuschuss_ok          => "AG_Zuschuss",
-        :ag_zuschuss             => "AG_Beitrag",
-        :ag_zuschuss_als_absolut => "ag_betrag", #"ag_prozent",
-        ##"vetrieb",
-        #"pv_pflicht"
-      }
-
-      keys_zu_stufenrechner_namen.each do |key, sr_name|
-        [i, key, @stufen_tester.call_destination_function("Abfrage_Feld_#{sr_name}")].should == [i, key, zeile[key]]
+      @stufen_tester.write_source_data_into_template(@zeile)
+    end
+    after(:all) do
+      @stufen_tester.close rescue nil
+      # Bitte mal Fehler bereinigen, eigentlich will ich natürlich das:
+      # @stufen_tester.close
+    end
+    
+    keys_zu_stufenrechner_namen.each do |key, sr_name|
+      it "sollte bei #{key} mit Stufenrechner-Feld #{sr_name} übereinstimmen" do
+        @stufen_tester.call_destination_function("Abfrage_Feld_#{sr_name}").should == @zeile[key]
       end
-      puts "Zeile: #{i}: #{keys_zu_stufenrechner_namen.size} Felder getestet"
-      #@stufen_tester.call_destination_function("Abfrage_Ergebnis", "monatlichesbruttogehalt", "akt").should == zeile[:akt_gehaltsabr_monatl_brutto_gehalt]
-      #@stufen_tester.call_destination_function("Abfrage_Ergebnis", "aganteilvl", "akt").should              == zeile[:akt_gehaltsabr_ag_anteil_vl  ]
-      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "beitragausnettoverzicht", "akt").should  == zeile[:akt_gehaltsabr_beitrag_aus_nv]
-      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "beitragausvl", "akt").should             == zeile[:akt_gehaltsabr_beitrag_aus_vl_gesamt]
-      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "beitragausananteilvl", "akt").should     == zeile[:akt_gehaltsabr_beitrag_aus_an_vl]
-      #@stufen_tester.call_destination_function("Abfrage_Ergebnis", "gesamtbrutto", "akt").should             == zeile[:akt_gehaltsabr_gesamt_brutto]
-      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "steuern", "akt").should                  == zeile[:akt_gehaltsabr_steuern]
-      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "svbeiträge", "akt").should               == zeile[:akt_gehaltsabr_sv_beitraege]
-      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "überweisungvl", "akt").should            == zeile[:akt_gehaltsabr_ueberweisung_vl]
-      #@stufen_tester.call_destination_function("Abfrage_Ergebnis", "überweisung", "akt").should              == zeile[:akt_gehaltsabr_ueberweisung_netto]
+    end
+#      puts "Zeile: #{i}: #{keys_zu_stufenrechner_namen.size} Felder getestet"
+
+#    end
+    it "sollte korrekte ergebnisse haben" do
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "monatlichesbruttogehalt", "akt").should == @zeile[:akt_gehaltsabr_monatl_brutto_gehalt]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "aganteilvl", "akt").should              == @zeile[:akt_gehaltsabr_ag_anteil_vl  ]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "beitragausnettoverzicht", "akt").should  == @zeile[:akt_gehaltsabr_beitrag_aus_nv]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "beitragausvl", "akt").should             == @zeile[:akt_gehaltsabr_beitrag_aus_vl_gesamt]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "beitragausananteilvl", "akt").should     == @zeile[:akt_gehaltsabr_beitrag_aus_an_vl]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "gesamtbrutto", "akt").should             == @zeile[:akt_gehaltsabr_gesamt_brutto]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "steuern", "akt").should                  == @zeile[:akt_gehaltsabr_steuern]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "svbeiträge", "akt").should               == @zeile[:akt_gehaltsabr_sv_beitraege]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "überweisungvl", "akt").should            == @zeile[:akt_gehaltsabr_ueberweisung_vl]
+      @stufen_tester.call_destination_function("Abfrage_Ergebnis", "überweisung", "akt").should              == @zeile[:akt_gehaltsabr_ueberweisung_netto]
       @stufen_tester.close_source_file
       @stufen_tester.close_destination_file
     end

@@ -46,5 +46,10 @@ class StufenTester
   def close_destination_file
     @ff.quit_excel
   end
+
+  def close
+    close_source_file
+    close_destination_file
+  end
   
 end
