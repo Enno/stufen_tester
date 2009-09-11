@@ -51,7 +51,7 @@ keys_zu_vb_abfrage_namen = {
   :akt_gehaltsabr_ueberweisung_netto    => "überweisung"
 }
 
-[0, 1, -2, -3, -4, -5, 6, 7, 8, 9].each do |i|
+[1, 2, -3, -4, -5, -6, -7, 8, 9].each do |i|
   next if i.nil? or i < 0
   
   describe StufenTester, "in Zeile #{i}" do
@@ -62,7 +62,7 @@ keys_zu_vb_abfrage_namen = {
       destination_file_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
       start_proc_name = "Entgeltumwandlungsrechner_starten"
       @stufen_tester = StufenTester.new(source_path, source_file, destination_file_path, destination_file, start_proc_name)
-      zeilennr = 21 + i
+      zeilennr = 20 + i
       @zeile = @stufen_tester.readin_source_data(zeilennr)
       puts @zeile.inspect
       @stufen_tester.write_source_data_into_template(@zeile)
