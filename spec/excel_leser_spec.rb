@@ -82,7 +82,9 @@ describe ExcelLeser, "mit realen Daten" do
     z29 = @el.zeile(29)
 
     z29[:name].should                                              == "Hans Meier"
+    z29[:kirchensteuer].should                                     == false
     z29[:berufsgruppe].should                                      == "sozialversicherungsfreier GGF"
+    z29[:durchfuehrungsweg].should                                 == "Direktversicherung"
     z29[:verzicht_betrag].should                                   == 22.0
     z29[:akt_gehaltsabr_monatl_brutto_gehalt].should               == 10000.00
     z29[:akt_gehaltsabr_ag_anteil_vl].should                       == 15.00

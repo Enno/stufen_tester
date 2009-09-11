@@ -17,7 +17,7 @@ class FormFiller
     @excel_controller = ExcelController.new(path + file_name)
     @excel_controller.open_excel_file(path + file_name)
     @xlapp = @excel_controller.excel_appl
-    @template_controller = TastenSender.new(:wartezeit => 0.5)
+    @template_controller = TastenSender.new(:wartezeit => 0.2)
     WIN32OLE.codepage = WIN32OLE::CP_UTF8 #zeichen als unicode verarbeiten
  
     p @xlapp.version
@@ -61,70 +61,73 @@ class FormFiller
       :bruttogehalt,
       :freibetrag,
       {:k_vers_art => {
-          :nature           => :radio_group,
-          :select_list      => ["g", "p"],
-          :default_value    => "g",
-          :deactivates      => [:kinderlos]
+          :nature            => :radio_group,
+          :select_list       => ["g", "p"],
+          :default_value     => "g",
+          :deact_values      => ["p"],
+          :deactivated_boxes => [:kinderlos]
         }},
       {:steuerklasse=> {
           :nature             => :direkt,
-          :select_list        => ["I", "II", "III", "IV", "V", "VI"],
-          :deakt_values      => ["V", "VI"],
-          :activates          => [:kinder_fb],
+          :select_list        => ["I", "II", "III", "IV", "V", "VI", "V", "VI"],
+          :deact_values       => ["V", "VI"],
+          :deactivated_boxes  => [:kinder_fb],
           :skip_adjustment    => 0
         }},
       :kinder_fb,
-      {:kirchensteuer       => true},
+      {:kirchensteuer         => true},
       :bland_wohnsitz,
       :bland_arbeit,
       :berufsgruppe,
-      {:durchfuehrungsweg   => {
+      {:durchfuehrungsweg => {
           :nature             => :direkt,
           :select_list        => ["Direktversicherung", "Pensionskasse", "Unterstützungskasse"],
-          :default_value      => "Unterstützungskasse",
-          :activates          => [:pausch_steuer40b],
+          :deact_values       => ["Unterstützungskasse"],
+          :deactivated_boxes  => [:pausch_steuer40b],
           :skip_adjustment    => 0
         }},
-      {:pausch_steuer40b    => false},
-      {:minijob_ok          => false},
-      {:kinderlos           => false},
+      {:pausch_steuer40b      => false},
+      {:minijob_ok            => false},
+      {:kinderlos             => false},
     ],[
       {:nvz => {
-          :nature           => :checkbox,
-          :default_value    => true,
-          :deactivates      => [:verzicht_betrag, :verzicht_als_netto],
-          :function         => GREATER_THEN_ZERO,
-          :params           => [:verzicht_betrag]
+          :nature             => :checkbox,
+          :default_value      => true,
+          :deact_values       => [false],
+          :deactivated_boxes  => [:verzicht_betrag, :verzicht_als_netto],
+          :function           => GREATER_THEN_ZERO,
+          :params             => [:verzicht_betrag]
         }},
       :verzicht_betrag,
-      {:verzicht_als_netto  => {
-          :nature           => :radio_group,
-          :select_list      => [true, false], #["netto", "brutto"]
-          :default_value    => true
+      {:verzicht_als_netto => {
+          :nature             => :radio_group,
+          :select_list        => [true, false], #["netto", "brutto"]
+          :default_value      => true
         }},
     ],[
       :vl_arbeitgeber,
       {:vl_gesamt => {
-          :nature           => :direkt,
-          :function         => SUM,
-          :params           => [:vl_arbeitgeber, :vl_arbeitnehmer],
+          :nature             => :direkt,
+          :function           => SUM,
+          :params             => [:vl_arbeitgeber, :vl_arbeitnehmer],
         }},
-      {:vl_als_beitrag      => true}
+      {:vl_als_beitrag        => true}
     ],[
       {:ag_zuschuss_ok => {
-          :nature           => :checkbox,
-          :default_value    => false,
-          :skip_adjustment  => -3,
-          :activates        => [:ag_zuschuss, :ag_zuschuss_als_absolut],
-          :function         => GREATER_THEN_ZERO,
-          :params           => [:ag_zuschuss]
+          :nature             => :checkbox,
+          :default_value      => false,
+          :deact_values       => [false],
+          :skip_adjustment    => -3,
+          :deactivated_boxes  => [:ag_zuschuss, :ag_zuschuss_als_absolut],
+          :function           => GREATER_THEN_ZERO,
+          :params             => [:ag_zuschuss]
 
         }},
       {:ag_zuschuss_als_absolut => {
-          :nature           => :radio_group,
-          :select_list      => [true, false], # ["€", "%"],
-          :default_value    => true,          # "€",
-          :skip_adjustment  => 0
+          :nature             => :radio_group,
+          :select_list        => [true, false], # ["€", "%"],
+          :default_value      => true,          # "€",
+          :skip_adjustment    => 0
         }},
       :ag_zuschuss
     ]
@@ -164,14 +167,17 @@ class FormFiller
       skip_adjustment     = @right_side[:skip_adjustment]
       select_list         = @right_side[:select_list]
       default_value       = @right_side[:default_value]
-      deakt_values = @right_side[:deakt_value] || [default_value]  ##TODO:
-        deakt_values.each do |value|
-          non_busy_boxes_new = (@continue_processing_data != value ?
-              @right_side[:deactivates] :
-              @right_side[:activates])
-          @non_busy_boxes     += non_busy_boxes_new if non_busy_boxes_new
+      deactivated_boxes   = [@right_side[:deactivated_boxes]]
+      deact_values        = @right_side[:deact_values]
+      unless deact_values == nil
+        deact_values.each do |value|
+          deactivated_boxes.each do |box|
+            non_busy_boxes_new = box if (@continue_processing_data == value)
+            @non_busy_boxes   += non_busy_boxes_new if non_busy_boxes_new
+          end
         end
-     else
+      end
+    else
       skip_adjustment     = 0
       case @nature
       when :checkbox

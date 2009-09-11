@@ -67,35 +67,35 @@ describe FormFiller do
   #
   it "sollte für vollen Datensatz funktionieren" do
     datensatz = {
-      :name                   => "Gerda Schulze",
-      ##:personal_nr=> 1.0,
-      ##:geb_datum=>"1966/05/02 00:00:00",
+      :name                   => "Hans Meier",
+      ##:personal_nr=> 2.0,
+      ##:geb_datum=>"1954/09/02 00:00:00",
       :bruttogehalt           => 2000.0,
-      :freibetrag             => 20,
-      :k_vers_art             => "g",
+      :freibetrag             => 50,
+      :k_vers_art             => "p",
       :steuerklasse           => "V",
       :kinder_fb              => 0,
-      :kirchensteuer          => true, #,
-      #:bland_wohnsitz=>"Berlin-Ost",
-      #:bland_arbeit=>"Berlin-West",
-      :berufsgruppe           => "Angestellte/Arbeiter",
-      :durchfuehrungsweg      => "Direktversicherung", #"Unterstützungskasse",
+      :kirchensteuer          => false, #,
+      :bland_wohnsitz         =>"Bayern",
+      :bland_arbeit           =>"Berlin-West",
+      :berufsgruppe           => "sozialversicherungsfreier GGF",
+      :durchfuehrungsweg      => "Direktversicherung",
       :pausch_steuer40b       => false,
       :minijob_ok             => false,
       :kinderlos              => false,
 
 #      :nvz                    => true,
-      :verzicht_betrag        => 57.57,
-      :verzicht_als_netto     => false,
+      :verzicht_betrag        => 22.00,
+      :verzicht_als_netto     => true,
 
-      :vl_arbeitgeber         => 40.0,
+      :vl_arbeitgeber         => 15.0,
       :vl_arbeitnehmer        => 0.0,
 
       :vl_als_beitrag         => true,
 
  #     :ag_zuschuss_ok         => true,
-      :ag_zuschuss_als_absolut=> true, #"€",
-      :ag_zuschuss            => 20
+      :ag_zuschuss_als_absolut=> false, #"€",
+      :ag_zuschuss            => 10
     }
     @ff.populate_template datensatz
     keys_zu_stufenrechner_namen = {
