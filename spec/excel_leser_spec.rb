@@ -2,6 +2,39 @@
 require File.dirname(File.dirname(__FILE__)) +  '/lib/excel_leser.rb'
 
 
+describe ExcelLeser, "ohne reale Daten" do
+  before(:each) do
+    dummy_pfad = "mappen_pfad + mappen_name"
+    @ec = mock("MockExcelController")
+    ExcelController.stub!(:new => @ec)
+    @ec.should_receive(:open_excel_file)
+    @ec.should_receive(:excel_appl)
+    @el = ExcelLeser.new(dummy_pfad, "Global", "Tabelle")
+  end
+
+  it "should convert integer Floats to Integers" do
+    eingabe_array = [1.0, "abc", -42.0, 100.0]
+    ausgabe_array = eingabe_array.clone
+    @el.werte_auf_integer_pruefen(ausgabe_array)
+    ausgabe_array.should == eingabe_array
+    ausgabe_array[0].should be_a(Integer)
+    ausgabe_array[2].should be_a(Integer)
+    ausgabe_array[3].should be_a(Integer)
+  end
+
+  it "should convert only integer Floats to Integers" do
+    eingabe_array = [1.00001, -42, "hallo", 100.0000300]
+    ausgabe_array = eingabe_array.clone
+    @el.werte_auf_integer_pruefen(ausgabe_array)
+    ausgabe_array.should == eingabe_array
+    ausgabe_array[0].should be_a(Float)
+    ausgabe_array[1].should be_a(Integer)
+    ausgabe_array[2].should be_a(String)
+    ausgabe_array[3].should be_a(Float)
+  end
+end
+
+
 describe ExcelLeser, "mit realen Daten" do
   before(:each) do
     mappen_name = "test.xls"
