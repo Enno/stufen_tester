@@ -50,8 +50,104 @@ SPALTEN_UEBERSCHRIFTEN = {
   :akt_gehaltsabr_sv_beitraege         => /SV-Beiträge/,
   :akt_gehaltsabr_netto_gehalt         => /Nettogehalt/,
   :akt_gehaltsabr_ueberweisung_vl      => /Überweisung VL/,
-  :akt_gehaltsabr_ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/
+  :akt_gehaltsabr_ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/,
+
+  :nv_monatl_brutto_gehalt => /monatliches \sBruttogehalt/,
+  :nv_ag_anteil_vl         => /AG-Anteil VL/,
+  :nv_beitrag_aus_nv       => /Beitrag aus \sNettoverzicht/,
+  :nv_beitrag_aus_vl_gesamt => /Beitrag aus VL \s(gesamt)/,
+  :nv_beitrag_aus_an_vl    => /Beitrag aus \sArbeitnehmeranteil VL/,
+  :nv_gesamt_brutto        => /Gesamt-Brutto/,
+  :nv_steuern              => /Steuern \s(inkl. Soli; Ki.-St.)/,
+  :nv_sv_beitraege         => /SV-Beiträge/,
+  :nv_netto_gehalt         => /Nettogehalt/,
+  :nv_ueberweisung_vl      => /Überweisung VL/,
+  :nv_ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/,
+
+  :vermoegensw_leistungen_monatl_brutto_gehalt => /monatliches \sBruttogehalt/,
+  :vermoegensw_leistungen_ag_anteil_vl         => /AG-Anteil VL/,
+  :vermoegensw_leistungen_beitrag_aus_nv       => /Beitrag aus \sNettoverzicht/,
+  :vermoegensw_leistungen_beitrag_aus_vl_gesamt => /Beitrag aus VL \s(gesamt)/,
+  :vermoegensw_leistungen_beitrag_aus_an_vl    => /Beitrag aus \sArbeitnehmeranteil VL/,
+  :vermoegensw_leistungen_gesamt_brutto        => /Gesamt-Brutto/,
+  :vermoegensw_leistungen_steuern              => /Steuern \s(inkl. Soli; Ki.-St.)/,
+  :vermoegensw_leistungen_sv_beitraege         => /SV-Beiträge/,
+  :vermoegensw_leistungen_netto_gehalt         => /Nettogehalt/,
+  :vermoegensw_leistungen_ueberweisung_vl      => /Überweisung VL/,
+  :vermoegensw_leistungen_ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/
 }
+
+SPALTEN_UEBERSCHRIFTEN_TEST = [
+  {:persoenliche_daten => {
+      :name             => /Name, Vorname/,
+      :personal_nr      => /Personalnr./,
+      :geb_datum        => /Geburtsdatum/,
+      :geschlecht       => /Geschlecht/,
+      :bruttogehalt     => /Bruttogehalt (mtl.)/	,
+      :freibetrag       => /Freibetrag/,
+      :k_vers_art       => /Kranken-\sversicherung/,
+      :steuerklasse     => /Steuer-\sklasse/,
+      :kirchensteuer    => /Kirchen-\ssteuer/,
+      :kinder_fb        => /Kinder-\sfreibetrag/,
+      :kinderlos        => /Kinderlos\s(erhöhter PV-Satz für unter 23-jährige)/,
+      :verzicht_betrag  => /Netto-\/\s*Bruttoverzicht/,
+      :vl_arbeitgeber   => /Arbeitgeber-\santeil VL/,
+      :vl_arbeitnehmer  => /Arbeitnehmer-\santeil VL/,
+      #:vl_gesamt        => nil,
+      :bland_wohnsitz   => /Bundesland \sWohnsitz/,
+      :bland_arbeit     => /Bundesland\sArbeitsstätte/,
+      :berufsgruppe     => /Berufsgruppe/,
+      :pausch_steuer40b	=> /Pauschalversteuerung Nach \s40b EStG wird aktuell genutzt/,
+    }}
+],[
+  {:aktuelle_gehaltsabrechnung => {
+      :monatl_brutto_gehalt => /monatliches \sBruttogehalt/,
+      :ag_anteil_vl         => /AG-Anteil VL/,
+      :beitrag_aus_nv       => /Beitrag aus \sNettoverzicht/,
+      :beitrag_aus_vl_gesamt => /Beitrag aus VL \s(gesamt)/,
+      :beitrag_aus_an_vl    => /Beitrag aus \sArbeitnehmeranteil VL/,
+      :gesamt_brutto        => /Gesamt-Brutto/,
+      :steuern              => /Steuern \s(inkl. Soli; Ki.-St.)/,
+      :sv_beitraege         => /SV-Beiträge/,
+      :netto_gehalt         => /Nettogehalt/,
+      :ueberweisung_vl      => /Überweisung VL/,
+      :ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/,
+    }}
+],[
+  {:netto_verzicht => {
+      :monatl_brutto_gehalt => /monatliches \sBruttogehalt/,
+      :ag_anteil_vl         => /AG-Anteil VL/,
+      :beitrag_aus_nv       => /Beitrag aus \sNettoverzicht/,
+      :beitrag_aus_vl_gesamt => /Beitrag aus VL \s(gesamt)/,
+      :beitrag_aus_an_vl    => /Beitrag aus \sArbeitnehmeranteil VL/,
+      :gesamt_brutto        => /Gesamt-Brutto/,
+      :steuern              => /Steuern \s(inkl. Soli; Ki.-St.)/,
+      :beitraege         => /SV-Beiträge/,
+      :netto_gehalt         => /Nettogehalt/,
+      :ueberweisung_vl      => /Überweisung VL/,
+      :ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/,
+    }}
+],[
+  {:vermoegenswirksame_leistungen => {
+      :monatl_brutto_gehalt => /monatliches \sBruttogehalt/,
+      :ag_anteil_vl         => /AG-Anteil VL/,
+      :beitrag_aus_nv       => /Beitrag aus \sNettoverzicht/,
+      :beitrag_aus_vl_gesamt => /Beitrag aus VL \s(gesamt)/,
+      :beitrag_aus_an_vl    => /Beitrag aus \sArbeitnehmeranteil VL/,
+      :gesamt_brutto        => /Gesamt-Brutto/,
+      :steuern              => /Steuern \s(inkl. Soli; Ki.-St.)/,
+      :sv_beitraege         => /SV-Beiträge/,
+      :netto_gehalt         => /Nettogehalt/,
+      :ueberweisung_vl      => /Überweisung VL/,
+      :ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/
+    }}
+],[
+  {:arbeitgeberzuschuss => {
+    :an_beitrag     => /Arbeitnehmer-\sbeitrag/,
+    :ag_zuschuss    => /Arbeitgeber-\szuschuss/,
+    :gesamt_beitrag => /Gesamt-\sbeitrag/
+  }}
+]
 
 #ABSCHNITTS_UEBERSCHRIFTEN = {
 #  :persoenliche_daten            => nil,
