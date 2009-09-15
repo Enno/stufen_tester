@@ -34,18 +34,18 @@ class FormFiller
 
   def open_template
     @template_controller.sende_tasten(@window_name, "%{F8}#{@proc_name}%{a}", :wartezeit => 0.2, :fenster_fehlt=>"Komischerweise fehlt das Excel-Fenster")
-    sleep(@access_to_macro||0.7)
+    sleep(@access_to_macro||0.5)
   end
 
   def tab_set(numbers = 1)
     return unless numbers
     shift_code = numbers < 0 ? "+" : ""
     send_tabs = "#{shift_code}{TAB}" * numbers.abs
-    send_keys("#{send_tabs}", :wartezeit => 0.02)
+    send_keys("#{send_tabs}", :wartezeit => 0.01)
   end
 
   def confirm_input
-    send_keys("{ENTER}", :wartezeit => 0.2)
+    send_keys("{ENTER}", :wartezeit => 0.1)
   end
 
   def send_keys(character, options = {})
