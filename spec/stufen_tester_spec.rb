@@ -81,7 +81,7 @@ describe StufenTester do
 
       keys_zu_stufenrechner_namen.each do |key, sr_name|
         it "sollte bei #{key} mit Stufenrechner-Feld #{sr_name} übereinstimmen" do
-          if key == :vl_arbeitnehmer
+          if @zeile[key].is_a? Float
             floated_zeile_data = (@zeile[key] * 100).round.to_f / 100
             @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}").should == floated_zeile_data
           else
