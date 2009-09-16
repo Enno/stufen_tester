@@ -54,7 +54,7 @@ keys_zu_vb_abfrage_namen = {
   
 describe StufenTester do
   before(:all) do
-    source_file = "test.xls"
+    source_file = "test_more.xls"
     source_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
     destination_file = "sr38a_op_tor2.xls"
     destination_file_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
@@ -62,7 +62,9 @@ describe StufenTester do
     @stufen_tester = StufenTester.new(source_path, source_file, destination_file_path, destination_file, start_proc_name)
   end
 
-  [1, -2, -3, -4, -5, -6, -7, -8, -9].each do |i|
+  #[1, -2, -3, -4, -5, -6, -7, -8, -9]
+  # Probl: 11, 12, 13
+  [-10, 14].each do |i|
     next if i.nil? or i < 0
   
     describe StufenTester, "in Zeile #{i}" do
