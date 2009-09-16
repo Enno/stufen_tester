@@ -63,6 +63,7 @@ SPALTEN_UEBERSCHRIFTEN = {
   :nv_netto_gehalt         => /Nettogehalt/,
   :nv_ueberweisung_vl      => /Überweisung VL/,
   :nv_ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/,
+  :nv_netto_verzicht       => /Nettoverzicht\s(ursprüngliches Netto-aktuelles Netto)/,
 
   :vermoegensw_leistungen_monatl_brutto_gehalt => /monatliches \sBruttogehalt/,
   :vermoegensw_leistungen_ag_anteil_vl         => /AG-Anteil VL/,
@@ -74,7 +75,10 @@ SPALTEN_UEBERSCHRIFTEN = {
   :vermoegensw_leistungen_sv_beitraege         => /SV-Beiträge/,
   :vermoegensw_leistungen_netto_gehalt         => /Nettogehalt/,
   :vermoegensw_leistungen_ueberweisung_vl      => /Überweisung VL/,
-  :vermoegensw_leistungen_ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/
+
+  :an_beitrag    => /Arbeitnehmer-\sbeitrag/,
+  :ag_zuschuss   => /Arbeitgeber-\szuschuss/,
+  :gesamtbeitrag => /Gesamt-\sbeitrag/
 }
 
 SPALTEN_UEBERSCHRIFTEN_TEST = [
@@ -122,10 +126,11 @@ SPALTEN_UEBERSCHRIFTEN_TEST = [
       :beitrag_aus_an_vl    => /Beitrag aus \sArbeitnehmeranteil VL/,
       :gesamt_brutto        => /Gesamt-Brutto/,
       :steuern              => /Steuern \s(inkl. Soli; Ki.-St.)/,
-      :beitraege         => /SV-Beiträge/,
+      :beitraege            => /SV-Beiträge/,
       :netto_gehalt         => /Nettogehalt/,
       :ueberweisung_vl      => /Überweisung VL/,
       :ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/,
+      :nv_netto_verzicht    => /Nettoverzicht\s(ursprüngliches Netto-aktuelles Netto)/,
     }}
 ],[
   {:vermoegenswirksame_leistungen => {
@@ -145,7 +150,7 @@ SPALTEN_UEBERSCHRIFTEN_TEST = [
   {:arbeitgeberzuschuss => {
     :an_beitrag     => /Arbeitnehmer-\sbeitrag/,
     :ag_zuschuss    => /Arbeitgeber-\szuschuss/,
-    :gesamt_beitrag => /Gesamt-\sbeitrag/
+    :gesamtbeitrag  => /Gesamt-\sbeitrag/
   }}
 ]
 

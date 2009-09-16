@@ -72,10 +72,10 @@ describe ExcelLeser, "mit realen Daten" do
     z22[:akt_gehaltsabr_beitrag_aus_an_vl].should                  == 0.00
     z22[:akt_gehaltsabr_gesamt_brutto].should                      == 2040.00
     z22[:akt_gehaltsabr_steuern].should                            == 256.08
-    z22[:akt_gehaltsabr_sv_beitraege].should                       == 231.54
-    z22[:akt_gehaltsabr_netto_gehalt].should                       == 1552.38
+    z22[:akt_gehaltsabr_sv_beitraege].should                       == 0 #231.54
+    z22[:akt_gehaltsabr_netto_gehalt].should                       == 1783.92
     z22[:akt_gehaltsabr_ueberweisung_vl].should                    == 40.00
-    z22[:akt_gehaltsabr_ueberweisung_netto].should                 == 1512.38
+    z22[:akt_gehaltsabr_ueberweisung_netto].should                 == 1743.92
   end
 
   it "sollte Zeile 29 korrekt einlesen" do
@@ -93,10 +93,10 @@ describe ExcelLeser, "mit realen Daten" do
     z29[:akt_gehaltsabr_beitrag_aus_an_vl].should                  == 0.00
     z29[:akt_gehaltsabr_gesamt_brutto].should                      == 10015.00
     z29[:akt_gehaltsabr_steuern].should                            == 4125.84
-    z29[:akt_gehaltsabr_sv_beitraege].should                       == 612.90
-    z29[:akt_gehaltsabr_netto_gehalt].should                       == 5276.26
+    z29[:akt_gehaltsabr_sv_beitraege].should                       == 0 #612.90
+    z29[:akt_gehaltsabr_netto_gehalt].should                       == 5889.16
     z29[:akt_gehaltsabr_ueberweisung_vl].should                    == 40.00
-    z29[:akt_gehaltsabr_ueberweisung_netto].should                 == 5236.26
+    z29[:akt_gehaltsabr_ueberweisung_netto].should                 == 5849.16
   end
 
   it "sollte Zeile 21 korrekt einlesen" do
@@ -114,6 +114,23 @@ describe ExcelLeser, "mit realen Daten" do
     z21[:akt_gehaltsabr_netto_gehalt].should                       == 1337.95
     z21[:akt_gehaltsabr_ueberweisung_vl].should                    == 40
     z21[:akt_gehaltsabr_ueberweisung_netto].should                 == 1297.95
+
+    z21[:nv_monatl_brutto_gehalt].should               == 2000.05
+    z21[:nv_ag_anteil_vl].should                       == 40.00
+   # z21[:nv_beitrag_aus_nv].should                     == 116.32
+    z21[:nv_beitrag_aus_vl_gesamt].should              == 0.00
+    z21[:nv_beitrag_aus_an_vl].should                  == 0.00
+   # z21[:nv_gesamt_brutto].should                      == 1923.73
+   # z21[:nv_steuern].should                            == 248.50
+#    z21[:nv_sv_beitraege].should                       == 394.85
+#    z21[:nv_netto_gehalt].should                       == 1280.38
+#    z21[:nv_ueberweisung_vl].should                    == 40
+#    z21[:nv_ueberweisung_netto].should                 == 1240.38
+#    z21[:nv_nettoverzicht].should                      == 57.57
+
+    z21[:an_beitrag].should                                        == 196.23
+#    z21[:ag_zuschuss].should                                       == 19.62
+    z21[:gesamtbeitrag].should                                     == 215.85
   end
 
   it "sollte ausreichend Spalten enthalten" do
