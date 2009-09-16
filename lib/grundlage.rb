@@ -163,11 +163,11 @@ SPALTEN_UEBERSCHRIFTEN_TEST = [
 #}
 
 EXCEL_EINLESE_TRANSFORMATIONEN = {
-  :minijob_ok               => {"ja"    => true, "nein"   => false},
-  :kirchensteuer            => {"j"     => true, "n"      => false},
-  :vl_als_beitrag           => {"ja"    => true, "nein"   => false},
-  :kinderlos                => {"j"     => true, "n"      => false},
-  :pausch_steuer40b         => {"j"     => true, "nein"   => false},
+  :minijob_ok               => {"ja"     => true, "j"     => true, "nein"   => false, "n"   => false},
+  :kirchensteuer            => {"ja"     => true, "j"     => true, "nein"   => false, "n"   => false},
+  :vl_als_beitrag           => {"ja"     => true, "j"     => true, "nein"   => false, "n"   => false},
+  :kinderlos                => {"ja"     => true, "j"     => true, "nein"   => false, "n"   => false},
+  :pausch_steuer40b         => {"ja"     => true, "j"     => true, "nein"   => false, "n"   => false},
   :ag_zuschuss_als_absolut  => {"€"     => true, "%"      => false},
   :verzicht_als_netto       => {"netto" => true, "brutto" => false},
   :berufsgruppe             => {"sozialvers.freier GGF" => "sozialversicherungsfreier GGF",

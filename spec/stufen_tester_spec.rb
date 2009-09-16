@@ -64,7 +64,11 @@ describe StufenTester do
 
   #[1, -2, -3, -4, -5, -6, -7, -8, -9]
   # Probl: 11, 12, 13
+<<<<<<< HEAD:spec/stufen_tester_spec.rb
   [13, -14].each do |i|
+=======
+  [-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, 14].each do |i|
+>>>>>>> dd08a3617c9e4e8607e99a51d0b51f1087fd5ec0:spec/stufen_tester_spec.rb
     next if i.nil? or i < 0
   
     describe StufenTester, "in Zeile #{i}" do
@@ -78,10 +82,15 @@ describe StufenTester do
       after(:all) do
         @stufen_tester.close
       end
-   
+
       keys_zu_stufenrechner_namen.each do |key, sr_name|
         it "sollte bei #{key} mit Stufenrechner-Feld #{sr_name} übereinstimmen" do
-          @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}").should == @zeile[key]
+          if @zeile[key].is_a? Float
+            floated_zeile_data = (@zeile[key] * 100).round.to_f / 100
+            @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}").should == floated_zeile_data
+          else
+            @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}").should == @zeile[key]
+          end
         end
       end
 
