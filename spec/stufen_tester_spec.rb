@@ -64,11 +64,8 @@ describe StufenTester do
 
   #[1, -2, -3, -4, -5, -6, -7, -8, -9]
   # Probl: 11, 12, 13
-<<<<<<< HEAD:spec/stufen_tester_spec.rb
-  [13, -14].each do |i|
-=======
+  #[13, -14].each do |i|
   [-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, 14].each do |i|
->>>>>>> dd08a3617c9e4e8607e99a51d0b51f1087fd5ec0:spec/stufen_tester_spec.rb
     next if i.nil? or i < 0
   
     describe StufenTester, "in Zeile #{i}" do
