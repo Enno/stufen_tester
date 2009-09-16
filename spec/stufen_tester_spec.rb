@@ -64,7 +64,7 @@ describe StufenTester do
 
   #[1, -2, -3, -4, -5, -6, -7, -8, -9]
   # Probl: 11, 12, 13
-  [-10, 14].each do |i|
+  [13, -14].each do |i|
     next if i.nil? or i < 0
   
     describe StufenTester, "in Zeile #{i}" do
