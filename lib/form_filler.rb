@@ -78,7 +78,14 @@ class FormFiller
       {:kirchensteuer         => true},
       :bland_wohnsitz,
       :bland_arbeit,
-      :berufsgruppe,
+      {:berufsgruppe => {
+          :nature             => :direkt,
+          :select_list        => ["Angestellte/Arbeiter", "Azubi", "sozialversicherungsfreier GGF"],
+          :deact_values       => ["sozialversicherungsfreier GGF"],
+          :deactivated_boxes  => [:minijob_ok],
+          :skip_adjustment    => -1
+        }},
+      {:pausch_steuer40b      => false},
       {:durchfuehrungsweg => {
           :nature             => :direkt,
           :select_list        => ["Direktversicherung", "Pensionskasse", "Unterstützungskasse"],
