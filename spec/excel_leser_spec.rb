@@ -75,7 +75,6 @@ describe ExcelLeser, "mit realen Daten" do
 
     it "sollte akt-Ergebnisse korrekt einlesen" do
       @z22[:name].should                                     == "Hans Meier"
-      @z22[:verzicht_betrag].should                          == 50.0
       @z22[:monatl_brutto_gehalt, :akt].should               == 2000.00
       @z22[:ag_anteil_vl, :akt].should                       == 40.00
       @z22[:beitrag_aus_nv, :akt].should                     == 0.00
@@ -88,14 +87,52 @@ describe ExcelLeser, "mit realen Daten" do
       @z22[:ueberweisung_vl, :akt].should                    == 40.00
       @z22[:ueberweisung_netto, :akt].should                 == 1743.92
     end
+
+    it "sollte nv-Ergebnisse korrekt einlesen" do
+      @z22[:name].should                                     == "Hans Meier"
+      @z22[:monatl_brutto_gehalt, :nv].should               == 2000.00
+      @z22[:ag_anteil_vl, :nv].should                       == 40.00
+      @z22[:beitrag_aus_nv, :nv].should                     == 57.08
+      @z22[:beitrag_aus_vl_gesamt, :nv].should              == 0.00
+      @z22[:beitrag_aus_an_vl, :nv].should                  == 0.00
+      @z22[:gesamt_brutto, :nv].should                      == 1982.92
+      @z22[:steuern, :nv].should                            == 249.00
+      @z22[:sv_beitraege, :nv].should                       == 0 #231.54
+      @z22[:netto_gehalt, :nv].should                       == 1733.92
+      @z22[:ueberweisung_vl, :nv].should                    == 40.00
+      @z22[:ueberweisung_netto, :nv].should                 == 1693.92
+      @z22[:nv_netto_verzicht, :nv].should                  == 50.00
+    end
+
+    it "sollte vl-Ergebnisse korrekt einlesen" do
+      @z22[:name].should                                     == "Hans Meier"
+      @z22[:monatl_brutto_gehalt, :vl].should               == 2000.00
+      @z22[:ag_anteil_vl, :vl].should                       == 40.00
+      @z22[:beitrag_aus_nv, :vl].should                     == 57.08
+      @z22[:beitrag_aus_vl_gesamt, :vl].should              == 40.00
+      @z22[:beitrag_aus_an_vl, :vl].should                  == 15.09
+      @z22[:gesamt_brutto, :vl].should                      == 1927.83
+      @z22[:steuern, :vl].should                            == 233.91
+      @z22[:sv_beitraege, :vl].should                       == 0 #231.54
+      @z22[:netto_gehalt, :vl].should                       be_close(1693.92, 1e-4)
+      @z22[:ueberweisung_vl, :vl].should                    == 0.00
+      @z22[:ueberweisung_netto, :vl].should                 be_close(1693.92, 1e-4)
+    end
+
+    it "sollte erg-Ergebnisse korrekt einlesen" do
+      @z22[:name].should                                     == "Hans Meier"
+      @z22[:an_beitrag, :erg].should                        == 112.17
+      @z22[:ag_zuschuss, :erg].should                       == 11.22
+      @z22[:gesamtbeitrag, :erg].should                     == 123.39
+    end
   end
 
-  if false #describe "zeile 29" do
+ if false #describe "zeile 29" do
     before(:all) do
       @z29 = @el.zeile(29)
     end
 
-    it "sollte Zeile 29 korrekt einlesen" do
+    it "sollte akt-Ergebnisse korrekt einlesen" do
       @z29[:name].should                                              == "Hans Meier"
       @z29[:kirchensteuer].should                                     == false
       @z29[:berufsgruppe].should                                      == "sozialversicherungsfreier GGF"

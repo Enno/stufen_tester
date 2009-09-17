@@ -62,7 +62,7 @@ class ExcelLeser #< ExcelController
     bereich_ueberschriften = zeile_als_array(17)
     spalten_ueberschriften = zeile_als_array(19)
     BEREICHE_INTERN_ZU_EXCEL.each do |int_bereich, excel_bereich|
-      SPALTEN_UEBERSCHRIFTEN_TEST[int_bereich].each do |ueberschrift_bezeichnung, ueberschrift_vorgegeben|
+      BEREICHS_UND_SPALTEN_UEBERSCHRIFTEN_HASH[int_bereich].each do |ueberschrift_bezeichnung, ueberschrift_vorgegeben|
         #p [excel_bereich, ueberschrift_bezeichnung, ueberschrift_vorgegeben]
         if ueberschrift_vorgegeben
 #        catch :ueberspringen do
