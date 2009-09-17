@@ -39,17 +39,17 @@ class StufenTester
     @ff.vb_send(vb_function_name, *args)
   end
 
-  def close_source_file
+  def close_test_table
     @el.excel_beenden
   end
 
-  def close_destination_file
+  def close_reference_excel
     @ff.quit_excel
   end
 
   def close
-    close_source_file
-    close_destination_file
+    close_test_table
+    close_reference_excel
   end
   
 end

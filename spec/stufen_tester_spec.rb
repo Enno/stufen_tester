@@ -18,7 +18,7 @@ keys_zu_stufenrechner_namen = {
   :minijob_ok              => "Minijob",
   :kinderlos               => "erh_pvsatz",
 
-   #   :nvz            => "nvz",
+  #   :nvz            => "nvz",
   :verzicht_betrag         => "nvz_betrag",
   :verzicht_als_netto      => "nvz_netto",
   #:verzicht_als_netto      => "nvz_brutto",
@@ -56,68 +56,77 @@ keys_zu_vb_abfrage_namen = {
   :ueberweisung_vl       => "überweisungvl",
   :ueberweisung_netto    => "überweisung"
 }
+describe "" do
+
+  [0,1,2].each do |suffix|
+    dateiname = "tg-#{suffix}.xls"
 
   
-describe "Test" do
-  before(:all) do
-    source_file = "test_more2.xls"
-    source_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
-    destination_file = "sr38a_op_tor2.xls"
-    destination_file_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
-    start_proc_name = "Entgeltumwandlungsrechner_starten"
-    @stufen_tester = StufenTester.new(source_path, source_file, destination_file_path, destination_file, start_proc_name)
-  end
-
-  #[1, -2, -3, -4, -5, -6, -7, -8, -9]
-  # Probl: 11, 12, 13
-  #[13, -14].each do |i|
-  #[-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, 14].each do |i|
-  #[11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].each do |i|
-  #[14].each do |i|
-  (10..12).each do |i|
-    next if i.nil? or i < 0
-  
-    describe StufenTester, "in Zeile #{i}" do
+    describe "Test #{dateiname}" do
       before(:all) do
-        zeilennr = 20 + i
-        @zeile = @stufen_tester.readin_source_data(zeilennr)
-        @stufen_tester.write_source_data_into_template(@zeile)
+        source_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
+        destination_file = "sr38a_op_tor2.xls"
+        destination_file_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
+        start_proc_name = "Entgeltumwandlungsrechner_starten"
+        @stufen_tester = StufenTester.new(source_path, dateiname, destination_file_path, destination_file, start_proc_name)
       end
 
-      after(:all) do
-        #@stufen_tester.close
+      after :all do
+        @stufen_tester.close_test_table
       end
 
-      keys_zu_stufenrechner_namen.each do |key, sr_name|
-        it "sollte Feld #{key} in das Stufenrechner-Feld #{sr_name} übernehmen" do
-          stufenr_wert = @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}")
-          tab_wert = @zeile[key]
 
-          trafo = keys_zu_stufenrechner_trafos[key]
-          tab_wert = trafo[tab_wert] if trafo
-          # hack
-          tab_wert = true if key == :verzicht_als_netto and @zeile[:verzicht_betrag] == 0
+      #[1, -2, -3, -4, -5, -6, -7, -8, -9]
+      # Probl: 11, 12, 13
+      #[13, -14].each do |i|
+      #[-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, 14].each do |i|
+      #[11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].each do |i|
+      #[14].each do |i|
+      (10..100).each do |i|
+        next if i.nil? or i < 0
 
-          if @zeile[key].is_a? Float
-            delta = 1e-6
-            #floated_zeile_data = ( tab_wert * round_factor).round.to_f / round_factor
-            stufenr_wert.should be_close tab_wert, delta
-          else
-            stufenr_wert.should == tab_wert
+        describe StufenTester, "in Zeile #{i}" do
+          before(:all) do
+            zeilennr = 20 + i
+            @zeile = @stufen_tester.readin_source_data(zeilennr)
+            @stufen_tester.write_source_data_into_template(@zeile)
           end
-        end
-      end
 
-      #["akt"]
-      %w[akt nv vl].each do |excel_bereich|
-        keys_zu_vb_abfrage_namen.each do |key, vb_name|
-          it "sollte in #{excel_bereich} bei #{key} mit VB-Abfrage-Feld #{vb_name} übereinstimmen" do
-            @zeile[key, excel_bereich].should == @stufen_tester.check_reference_data("Abfrage_Ergebnis", vb_name, excel_bereich)
+          after(:all) do
+            @stufen_tester.close_reference_excel
+          end
+
+          keys_zu_stufenrechner_namen.each do |key, sr_name|
+            it "sollte Feld #{key} in das Stufenrechner-Feld #{sr_name} übernehmen" do
+              stufenr_wert = @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}")
+              tab_wert = @zeile[key]
+
+              trafo = keys_zu_stufenrechner_trafos[key]
+              tab_wert = trafo[tab_wert] if trafo
+              # hack
+              tab_wert = true if key == :verzicht_als_netto and @zeile[:verzicht_betrag] == 0
+
+              if @zeile[key].is_a? Float
+                delta = 1e-6
+                #floated_zeile_data = ( tab_wert * round_factor).round.to_f / round_factor
+                stufenr_wert.should be_close tab_wert, delta
+              else
+                stufenr_wert.should == tab_wert
+              end
+            end
+          end
+
+          #["akt"]
+          %w[akt nv vl].each do |excel_bereich|
+            keys_zu_vb_abfrage_namen.each do |key, vb_name|
+              it "sollte in #{excel_bereich} bei #{key} mit VB-Abfrage-Feld #{vb_name} übereinstimmen" do
+                @zeile[key, excel_bereich].should == @stufen_tester.check_reference_data("Abfrage_Ergebnis", vb_name, excel_bereich)
+              end
+            end
           end
         end
       end
     end
+
   end
 end
-
-
