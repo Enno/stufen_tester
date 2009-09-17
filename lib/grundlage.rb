@@ -81,8 +81,15 @@ SPALTEN_UEBERSCHRIFTEN = {
   :gesamtbeitrag => /Gesamt-\sbeitrag/
 }
 
-SPALTEN_UEBERSCHRIFTEN_TEST = [
-  {:persoenliche_daten => {
+#SPALTEN_UEBERSCHRIFTEN = SP_UEBERSCHRIFTEN_EINGABE
+
+BEREICHE_INTERN_ZU_EXCEL = {
+  :persoenliche_daten => ".",
+  :aktuelle_gehaltsabrechnung => "akt"
+}
+
+SPALTEN_UEBERSCHRIFTEN_TEST = {
+  :persoenliche_daten => {
       :name             => /Name, Vorname/,
       :personal_nr      => /Personalnr./,
       :geb_datum        => /Geburtsdatum/,
@@ -102,9 +109,8 @@ SPALTEN_UEBERSCHRIFTEN_TEST = [
       :bland_arbeit     => /Bundesland\sArbeitsstätte/,
       :berufsgruppe     => /Berufsgruppe/,
       :pausch_steuer40b	=> /Pauschalversteuerung Nach \s40b EStG wird aktuell genutzt/,
-    }}
-],[
-  {:aktuelle_gehaltsabrechnung => {
+    },
+  :aktuelle_gehaltsabrechnung => {
       :monatl_brutto_gehalt => /monatliches \sBruttogehalt/,
       :ag_anteil_vl         => /AG-Anteil VL/,
       :beitrag_aus_nv       => /Beitrag aus \sNettoverzicht/,
@@ -116,9 +122,8 @@ SPALTEN_UEBERSCHRIFTEN_TEST = [
       :netto_gehalt         => /Nettogehalt/,
       :ueberweisung_vl      => /Überweisung VL/,
       :ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/,
-    }}
-],[
-  {:netto_verzicht => {
+    },
+  :netto_verzicht => {
       :monatl_brutto_gehalt => /monatliches \sBruttogehalt/,
       :ag_anteil_vl         => /AG-Anteil VL/,
       :beitrag_aus_nv       => /Beitrag aus \sNettoverzicht/,
@@ -131,9 +136,8 @@ SPALTEN_UEBERSCHRIFTEN_TEST = [
       :ueberweisung_vl      => /Überweisung VL/,
       :ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/,
       :nv_netto_verzicht    => /Nettoverzicht\s(ursprüngliches Netto-aktuelles Netto)/,
-    }}
-],[
-  {:vermoegenswirksame_leistungen => {
+    },
+  :vermoegenswirksame_leistungen => {
       :monatl_brutto_gehalt => /monatliches \sBruttogehalt/,
       :ag_anteil_vl         => /AG-Anteil VL/,
       :beitrag_aus_nv       => /Beitrag aus \sNettoverzicht/,
@@ -145,14 +149,13 @@ SPALTEN_UEBERSCHRIFTEN_TEST = [
       :netto_gehalt         => /Nettogehalt/,
       :ueberweisung_vl      => /Überweisung VL/,
       :ueberweisung_netto   => /Überweisung\s(Netto-Gehalt)/
-    }}
-],[
-  {:arbeitgeberzuschuss => {
+    },
+  :arbeitgeberzuschuss => {
     :an_beitrag     => /Arbeitnehmer-\sbeitrag/,
     :ag_zuschuss    => /Arbeitgeber-\szuschuss/,
     :gesamtbeitrag  => /Gesamt-\sbeitrag/
-  }}
-]
+  }
+}
 
 #ABSCHNITTS_UEBERSCHRIFTEN = {
 #  :persoenliche_daten            => nil,

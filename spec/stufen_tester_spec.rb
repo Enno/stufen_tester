@@ -44,16 +44,16 @@ keys_zu_stufenrechner_trafos = {
 }
 
 keys_zu_vb_abfrage_namen = {
-  :akt_gehaltsabr_monatl_brutto_gehalt  => "monatlichesbruttogehalt",
-  :akt_gehaltsabr_ag_anteil_vl          => "aganteilvl",
-  :akt_gehaltsabr_beitrag_aus_nv        => "beitragausnettoverzicht",
-  :akt_gehaltsabr_beitrag_aus_vl_gesamt => "beitragausvl",
-  :akt_gehaltsabr_beitrag_aus_an_vl     => "beitragausananteilvl",
-  :akt_gehaltsabr_gesamt_brutto         => "gesamtbrutto",
-  :akt_gehaltsabr_steuern               => "steuern",
-  :akt_gehaltsabr_sv_beitraege          => "svbeiträge",
-  :akt_gehaltsabr_ueberweisung_vl       => "überweisungvl",
-  :akt_gehaltsabr_ueberweisung_netto    => "überweisung"
+  :monatl_brutto_gehalt  => "monatlichesbruttogehalt",
+  :ag_anteil_vl          => "aganteilvl",
+  :beitrag_aus_nv        => "beitragausnettoverzicht",
+  :beitrag_aus_vl_gesamt => "beitragausvl",
+  :beitrag_aus_an_vl     => "beitragausananteilvl",
+  :gesamt_brutto         => "gesamtbrutto",
+  :steuern               => "steuern",
+  :sv_beitraege          => "svbeiträge",
+  :ueberweisung_vl       => "überweisungvl",
+  :ueberweisung_netto    => "überweisung"
 }
 
   
@@ -72,8 +72,8 @@ describe "Test" do
   #[13, -14].each do |i|
   #[-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, 14].each do |i|
   #[11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].each do |i|
-  [10, -11, 12].each do |i|
-  #(10..309).each do |i|
+  [22].each do |i|
+  #(40..119).each do |i|
     next if i.nil? or i < 0
   
     describe StufenTester, "in Zeile #{i}" do
@@ -106,9 +106,11 @@ describe "Test" do
         end
       end
 
+      #["akt"]
       keys_zu_vb_abfrage_namen.each do |key, vb_name|
         it "sollte bei #{key} mit VB-Abfrage-Feld #{vb_name} übereinstimmen" do
-          @zeile[key].should == @stufen_tester.check_reference_data("Abfrage_Ergebnis", vb_name, "akt")
+          tab_key = "akt_gehaltsabr_#{key}".to_sym
+          @zeile[tab_key].should == @stufen_tester.check_reference_data("Abfrage_Ergebnis", vb_name, "akt")
         end
       end
 
