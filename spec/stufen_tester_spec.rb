@@ -4,24 +4,24 @@ require 'lib/stufen_tester'
 keys_zu_stufenrechner_namen = {
   :name                    => "name",
   :bruttogehalt            => "gehalt",
-  #:freibetrag              => "Freibetrag",
-  #"kv_pflicht",
+  :freibetrag              => "Freibetrag",
+  :k_vers_art              => "kv_pflicht",
   #"KV_privat",
-  #    :steuerklasse       => "Steuerklasse",
+  :steuerklasse            => "Steuerklasse",
   :kinder_fb               => "kinderfreibetraege",
   :kirchensteuer           => "Kirchensteuer",
-  #    :bland_wohnsitz     => "Wohnsitz",
-  #    :bland_arbeit       => "arbeitsstaette",
+  :bland_wohnsitz          => "Wohnsitz",
+  :bland_arbeit            => "arbeitsstaette",
   :berufsgruppe            => "Berufsgruppe",
   :durchfuehrungsweg       => "bavweg",
   :pausch_steuer40b        => "dive_40b_vorhanden",
   :minijob_ok              => "Minijob",
   :kinderlos               => "erh_pvsatz",
 
-  #      :nvz            => "nvz",
+   #   :nvz            => "nvz",
   :verzicht_betrag         => "nvz_betrag",
   :verzicht_als_netto      => "nvz_netto",
-  #      :verzicht_als_netto      => "nvz_brutto",
+  #:verzicht_als_netto      => "nvz_brutto",
   :vl_arbeitgeber          => "VL_AG",
   :vl_arbeitnehmer         => "VL_AN",
   #"VL_gesamt",
@@ -38,6 +38,11 @@ keys_zu_stufenrechner_namen = {
   #"pv_pflicht"
 }
 
+keys_zu_stufenrechner_trafos = {
+  :k_vers_art      => proc {|kv_art| kv_art == "g"},
+  :steuerklasse    => proc {|stkl|   (%w[I II III IV V VI].index(stkl) + 1).to_s }
+}
+
 keys_zu_vb_abfrage_namen = {
   :akt_gehaltsabr_monatl_brutto_gehalt  => "monatlichesbruttogehalt",
   :akt_gehaltsabr_ag_anteil_vl          => "aganteilvl",
@@ -52,7 +57,7 @@ keys_zu_vb_abfrage_namen = {
 }
 
   
-describe StufenTester do
+describe "Test" do
   before(:all) do
     source_file = "test_more.xls"
     source_path = File.dirname(File.dirname(__FILE__)) +  "\\daten\\"
@@ -65,7 +70,10 @@ describe StufenTester do
   #[1, -2, -3, -4, -5, -6, -7, -8, -9]
   # Probl: 11, 12, 13
   #[13, -14].each do |i|
-  [-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, 14].each do |i|
+  #[-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, 14].each do |i|
+  #[11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].each do |i|
+  [10, -11, 12].each do |i|
+  #(10..309).each do |i|
     next if i.nil? or i < 0
   
     describe StufenTester, "in Zeile #{i}" do
@@ -81,12 +89,19 @@ describe StufenTester do
       end
 
       keys_zu_stufenrechner_namen.each do |key, sr_name|
-        it "sollte bei #{key} mit Stufenrechner-Feld #{sr_name} übereinstimmen" do
+        it "sollte Feld #{key} in das Stufenrechner-Feld #{sr_name} übernehmen" do
+          stufenr_wert = @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}")
+          tab_wert = @zeile[key]
+
+          trafo = keys_zu_stufenrechner_trafos[key]
+          tab_wert = trafo[tab_wert] if trafo
+
           if @zeile[key].is_a? Float
-            floated_zeile_data = (@zeile[key] * 100).round.to_f / 100
-            @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}").should == floated_zeile_data
+            round_factor = 1_000_000_000
+            floated_zeile_data = ( tab_wert * round_factor).round.to_f / round_factor
+            stufenr_wert.should == floated_zeile_data
           else
-            @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}").should == @zeile[key]
+            stufenr_wert.should == tab_wert
           end
         end
       end
