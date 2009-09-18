@@ -96,6 +96,15 @@ describe "" do
             @stufen_tester.close_reference_excel
           end
 
+          def vergleiche(ist_wert, soll_wert)
+            if soll_wert.is_a? Numeric
+              delta = 1e-6
+              ist_wert.should be_close soll_wert, delta
+            else
+              ist_wert.should == soll_wert
+            end
+          end
+
           keys_zu_stufenrechner_namen.each do |key, sr_name|
             it "sollte Feld #{key} in das Stufenrechner-Feld #{sr_name} übernehmen" do
               stufenr_wert = @stufen_tester.check_reference_data("Abfrage_Feld_#{sr_name}")
@@ -106,13 +115,8 @@ describe "" do
               # hack
               tab_wert = true if key == :verzicht_als_netto and @zeile[:verzicht_betrag] == 0
 
-              if @zeile[key].is_a? Float
-                delta = 1e-6
-                #floated_zeile_data = ( tab_wert * round_factor).round.to_f / round_factor
-                stufenr_wert.should be_close tab_wert, delta
-              else
-                stufenr_wert.should == tab_wert
-              end
+              vergleiche stufenr_wert, tab_wert
+
             end
           end
 
@@ -120,7 +124,7 @@ describe "" do
           %w[akt nv vl].each do |excel_bereich|
             keys_zu_vb_abfrage_namen.each do |key, vb_name|
               it "sollte in #{excel_bereich} bei #{key} mit VB-Abfrage-Feld #{vb_name} übereinstimmen" do
-                @zeile[key, excel_bereich].should == @stufen_tester.check_reference_data("Abfrage_Ergebnis", vb_name, excel_bereich)
+                vergleiche @zeile[key, excel_bereich], @stufen_tester.check_reference_data("Abfrage_Ergebnis", vb_name, excel_bereich)
               end
             end
           end
