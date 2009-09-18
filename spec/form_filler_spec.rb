@@ -78,10 +78,10 @@ describe FormFiller do
       :kirchensteuer          => false, #,
       :bland_wohnsitz         =>"Bayern",
       :bland_arbeit           =>"Berlin-West",
-      :berufsgruppe           => "Azubi",#"sozialversicherungsfreier GGF", #,"Angestellte/Arbeiter",#
+      :berufsgruppe           => "sozialversicherungsfreier GGF", #"Azubi", #,"Angestellte/Arbeiter",#
       :durchfuehrungsweg      => "Direktversicherung",
-      :pausch_steuer40b       => false,
-      :minijob_ok             => true,
+      :pausch_steuer40b       => true,
+      :minijob_ok             => false,
       :kinderlos              => false,
 
 #      :nvz                    => true,
