@@ -58,7 +58,7 @@ keys_zu_vb_abfrage_namen = {
 }
 describe "" do
 
-  [0].each do |suffix|
+  [3].each do |suffix|
     dateiname = "tg-#{suffix}.xls"
 
   
@@ -81,7 +81,7 @@ describe "" do
       #[13, -14].each do |i|
       #[-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, 14].each do |i|
       #[11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].each do |i|
-      [12].each do |i|
+      [94].each do |i|
       #(10..100).each do |i|
         next if i.nil? or i < 0
 
@@ -93,7 +93,7 @@ describe "" do
           end
 
           after(:all) do
-            #@stufen_tester.close_reference_excel
+            @stufen_tester.close_reference_excel
           end
 
           keys_zu_stufenrechner_namen.each do |key, sr_name|

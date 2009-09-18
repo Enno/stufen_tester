@@ -41,7 +41,7 @@ class FormFiller
     return unless numbers
     shift_code = numbers < 0 ? "+" : ""
     send_tabs = "#{shift_code}{TAB}" * numbers.abs
-    send_keys("#{send_tabs}", :wartezeit => 0.401)
+    send_keys("#{send_tabs}", :wartezeit => 0.01)
   end
 
   def confirm_input
