@@ -69,10 +69,8 @@ class FormFiller
         }},
       {:steuerklasse=> {
           :nature             => :direkt,
-          :select_list        => ["I", "II", "III", "IV", "V", "VI", "V", "VI"],
           :deact_values       => ["V", "VI"],
           :deactivated_boxes  => [:kinder_fb],
-          :skip_adjustment    => 0
         }},
       :kinder_fb,
       {:kirchensteuer         => true},
@@ -80,18 +78,13 @@ class FormFiller
       :bland_arbeit,
       {:berufsgruppe => {
           :nature             => :direkt,
-          :select_list        => ["Angestellte/Arbeiter", "Azubi", "sozialversicherungsfreier GGF"],
           :deact_values       => ["sozialversicherungsfreier GGF"],
           :deactivated_boxes  => [:minijob_ok],
-          :skip_adjustment    => -1
         }},
-      {:pausch_steuer40b      => false},
       {:durchfuehrungsweg => {
           :nature             => :direkt,
-          :select_list        => ["Direktversicherung", "Pensionskasse", "Unterstützungskasse"],
           :deact_values       => ["Unterstützungskasse"],
           :deactivated_boxes  => [:pausch_steuer40b],
-          :skip_adjustment    => 0
         }},
       {:pausch_steuer40b      => false},
       {:minijob_ok            => false},
@@ -208,7 +201,6 @@ class FormFiller
   def enter_value(dataset, box_info)
 
     identify_nature(dataset, box_info)
-
     return if @processing_data_attributes["non_busy_boxes"].include? @processing_data_attributes["actual_box_name"]
 
     case @processing_data_attributes["nature"]

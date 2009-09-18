@@ -1,4 +1,3 @@
-puts "stufen_tester_spec"
 require 'lib/stufen_tester'
 
 keys_zu_stufenrechner_namen = {
@@ -82,6 +81,7 @@ describe "" do
       #[-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, 14].each do |i|
       #[11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].each do |i|
       [94].each do |i|
+      #[12].each do |i|
       #(10..100).each do |i|
         next if i.nil? or i < 0
 
