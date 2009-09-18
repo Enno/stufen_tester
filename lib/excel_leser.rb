@@ -34,7 +34,7 @@ class ExcelLeser #< ExcelController
 
   def werte_auf_integer_pruefen(aktuelle_zeile)
     aktuelle_zeile.each_with_index do |wert, index|
-      aktuelle_zeile[index] = wert.to_i if wert.is_a?(Float) && wert.to_s.match(/[.0]+$/)
+      aktuelle_zeile[index] = wert.round if wert.is_a?(Float) && wert.to_s.match(/[.0]+$/)
     end
     return aktuelle_zeile
   end

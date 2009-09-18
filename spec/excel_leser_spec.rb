@@ -32,6 +32,21 @@ describe ExcelLeser, "ohne reale Daten" do
     ausgabe_array[2].should be_a(String)
     ausgabe_array[3].should be_a(Float)
   end
+
+  it "should convert integer Floats close below Integers correctly" do
+    eingabe_array = [0.9999999999999999,
+                     -42 - 1e-14,
+                     -42 + 1e-14,
+                      42 - 1e-14,
+                      17 - 1e-17,
+                     100 - 1e-14]
+    eingabe_array.each {|erg| erg.should be_a(Float)}
+    ausgabe_array = eingabe_array.clone
+    @el.werte_auf_integer_pruefen(ausgabe_array)
+    ausgabe_array.each {|erg| erg.should be_a(Integer)}
+    ausgabe_array.should == eingabe_array.map {|float| float.to_s.to_f}
+    ausgabe_array.should == [1, -42, -42, 42, 17, 100]
+  end
 end
 
 excel_leser = nil
